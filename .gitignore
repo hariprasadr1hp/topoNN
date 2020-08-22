@@ -1,0 +1,16 @@
+.vscode/
+*/__pycache__
+
+#files
+*.log
+*.check
+*.pdf
+*.out
+
+#folders
+build/
+data/
+info/
+
+
+

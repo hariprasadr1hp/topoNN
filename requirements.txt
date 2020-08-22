@@ -1,0 +1,13 @@
+argparse
+numpy
+matplotlib
+scipy
+sklearn
+seaborn
+pandas
+h5py
+pyevtk
+sphinx_rtd_theme
+recommonmark
+sphinxcontrib-spelling
+nbsphinx
