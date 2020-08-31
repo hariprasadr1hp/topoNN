@@ -7,7 +7,7 @@ set(SOURCES_PLATE
     Plate/src/plate.cpp
 )
 
-add_library(plate
+add_library(plate SHARED
     ${HEADERS_PLATE}
     ${SOURCES_PLATE}
 )
@@ -32,7 +32,7 @@ set(SOURCES_SOLVEFE
     SolveFE/src/solve.cpp
 )
 
-add_library(solveFE
+add_library(solveFE SHARED
     ${HEADERS_SOLVEFE}
     ${SOURCES_SOLVEFE}
 )

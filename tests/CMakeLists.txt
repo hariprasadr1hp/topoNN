@@ -6,14 +6,13 @@ set(TESTSOURCES_PLATE
     test_Plate/test_plate.cpp
 )
 
-
 add_executable(test_plate
     ${TESTSOURCES_PLATE}
 )
 
-
-target_link_libraries(test_plate PUBLIC
-	gtest_main
+target_link_libraries(test_plate 
+    PUBLIC gtest_main
+    PUBLIC plate
 )
 
 add_test(
@@ -35,8 +34,9 @@ add_executable(test_solveFE
 )
 
 
-target_link_libraries(test_solveFE PUBLIC
-	gtest_main
+target_link_libraries(test_solveFE
+    PUBLIC gtest_main
+    PUBLIC solveFE
 )
 
 add_test(
@@ -45,4 +45,26 @@ add_test(
 )
 
 ###############################################################
+
+# set(TESTSOURCES_TOPONN
+    
+# )
+
+
+# add_executable(test_topoNN
+#     ${TESTSOURCES_TOPONN}
+# )
+
+
+# target_link_libraries(test_topoNN PUBLIC
+# 	gtest_main
+# )
+
+# add_test(
+#     NAME test_topoNN
+#     COMMAND test_topoNN
+# )
+
+###############################################################
+
 

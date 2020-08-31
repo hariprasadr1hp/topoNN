@@ -2,15 +2,15 @@
 #define SOLVE_HPP
 
 #include <iostream>
+#include <vector>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include "element_routine.hpp"
-#include "material_routine.hpp"
 
 using namespace std;
 using namespace Eigen;
 
-struct elems{
+struct dim{
     int x;
     int y;
     int z;
@@ -22,9 +22,13 @@ struct xyz{
     double z;
 };
 
+typedef Eigen::SparseMatrix<double> SpMat;
+typedef Eigen::Triplet<double> T;
+
 class SolveFE
 {
     private:
+
 
     public:
         //constructor
@@ -36,11 +40,18 @@ class SolveFE
         ArrayXXd nodeCoords;
         ArrayXXd BC;
         ArrayXXd FC;
-        double E,Nu,sigY;
+        Vector3d matlParams;
+        VectorXd Fint_global;
+        VectorXd Fext_global;
+        VectorXd u_global;
+        SpMat K_global;
+
+        // double E,Nu,sigY;
         
         void solveInitialize();
-        void elemCoordinates(ArrayXXd&,int);
-
+        void elemCoordinates(ArrayXXd&,VectorXi&);
+        void localDisp(VectorXd&,VectorXi&);
+        void connectivityMatrix();
 };
 
 

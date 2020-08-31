@@ -3,7 +3,6 @@
 
 
 Plate :: Plate(Vector3i& elem)
-/* Constructor- PlateFE */
 {
     nel.x = elem(0);
     nel.y = elem(1);
@@ -21,7 +20,9 @@ void Plate :: structInitialize()
     genNodeCoords();
 }
 
-/// sets the no. of elements in each direction
+/**
+ * sets the no. of elements in each direction
+ */
 void Plate :: setElemXYZ(Elems& elem)
 {
     nel.x = elem.x;
@@ -30,7 +31,9 @@ void Plate :: setElemXYZ(Elems& elem)
     structInitialize();
 }
 
-/// retrieves the no. of elements in each direction
+/**
+ * retrieves the no. of elements in each direction
+ */
 void Plate :: getElemXYZ(Elems& elem)
 {
     elem.x = nel.x;
@@ -84,8 +87,6 @@ void Plate :: NodetoCoord(Vector3d& coord, int node)
 */    
 void Plate :: getElemOrigin(Vector3d& origin, int elem)
 {
-    // if (checkElemID(elem))
-    // {
         int x,y,z,temp1,temp2;
         temp1 = elem - 1;
         z = temp1 / (nel.x*nel.y);
@@ -93,10 +94,6 @@ void Plate :: getElemOrigin(Vector3d& origin, int elem)
         y = temp2 / nel.x;
         x = temp2 % nel.x;
         origin  = {double(x),double(y),double(z)};
-    // }
-    // else{
-    //     origin = {-1,-1,-1};
-    // }
 }
 
 /**
@@ -149,21 +146,27 @@ void Plate :: getHex8IDs(VectorXi& hexid, Vector3d& origin)
     }
 }
 
-/// checks whether an element with the following ID exist
+/**
+ * checks whether an element with the following ID exist
+ */
 bool Plate :: checkElemID(int elem)
 {
     // return (elemNodes.col(0) == elem).any();
     return true ? (elem > 0 && elem <= totelems) : false;
 }
 
-/// checks whether a node with the following ID exist
+/**
+ * checks whether a node with the following ID exist
+ */
 bool Plate :: checkNodeID(int node)
 {
     // return (nodeCoords.col(0) == node).any();
     return true ? (node > 0 && node <= totnodes) : false;
 }
 
-///checks whether the node coordinates exist
+/**
+ * checks whether the node coordinates exist
+ */
 bool Plate :: checkCoords(Vector3d& coords)
 {
     if ((coords(0) >= nel.x+1) || (coords(0) < 0)){
@@ -178,7 +181,9 @@ bool Plate :: checkCoords(Vector3d& coords)
     return true;
 }
 
-///checks whether the origin coordinates exist
+/**
+ * checks whether the origin coordinates exist
+ */
 bool Plate :: checkOrigin(Vector3d& origin)
 {
     if ((origin(0) >= nel.x) || (origin(0) < 0)){
@@ -212,7 +217,9 @@ void Plate :: genElemNodes()
 
 }
 
-/// Generates Node-Coordinates Database
+/**
+ * Generates Node-Coordinates Database
+ */
 void Plate :: genNodeCoords()
 {
     Vector3d coords;
@@ -229,7 +236,9 @@ void Plate :: genNodeCoords()
 
 }
 
-/// Writes the node IDs on the left side to a vector
+/**
+ * Writes the node IDs on the left side to a vector
+ */
 void Plate :: getLeft(VectorXd& left)
 {   
     int temp,count;
@@ -243,7 +252,9 @@ void Plate :: getLeft(VectorXd& left)
 
 }
 
-/// Writes the node IDs on the right side to a vector
+/**
+ * Writes the node IDs on the right side to a vector
+ */
 void Plate :: getRight(VectorXd& right)
 {
     int temp,count;
@@ -256,7 +267,9 @@ void Plate :: getRight(VectorXd& right)
     }
 }
 
-/// Writes the node IDs on the top side to a vector
+/**
+ * Writes the node IDs on the top side to a vector
+ */
 void Plate :: getUp(VectorXd& top)
 {
     int temp,count;
@@ -269,7 +282,9 @@ void Plate :: getUp(VectorXd& top)
     }
 }
 
-/// Writes the node IDs on the bottom side to a vector
+/**
+ * Writes the node IDs on the bottom side to a vector
+ */
 void Plate :: getDown(VectorXd& bottom)
 {
     int temp,count;

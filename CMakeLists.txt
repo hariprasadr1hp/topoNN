@@ -6,6 +6,12 @@ project(${This})
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake-modules")
 
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+###############################################################
+# find_package (pybind11 REQUIRED)
+# message("Python VERSION: ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}")
 ###############################################################
 find_package(OpenMP)
 if (OpenMP_FOUND)
@@ -22,7 +28,6 @@ else (MPI_FOUND)
     message(SEND_ERROR "This application cannot compile without MPI")
 endif (MPI_FOUND)
 ###############################################################
-# set( EIGEN3_INCLUDE_DIR "$ENV{EIGEN3_INCLUDE_DIR}" )
 find_package (Eigen3 REQUIRED)
 if (Eigen3_FOUND)
     message("Eigen3 Found!")
@@ -30,8 +35,10 @@ else (Eigen3_FOUND)
     message(SEND_ERROR "This application cannot compile without Eigen3")
 endif (Eigen3_FOUND)
 include_directories(${EIGEN3_INCLUDE_DIR})
-###############################################################
 
+# ###############################################################
+
+add_subdirectory(thirdparty/pybind11)
 enable_testing()
 add_subdirectory(thirdparty/googletest)
 add_subdirectory(tests)
@@ -43,21 +50,27 @@ set(CMAKE_CXX_COMPILER /usr/bin/mpiCC)
 # set(CMAKE_C_COMPILER /usr/bin/gcc)
 # set(CMAKE_CXX_COMPILER /usr/bin/g++)
 
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -g -Wall -O3 -std=c++11")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fPIC -Wall -O3 -std=c++11")
  
 ###############################################################
 
+
 add_subdirectory(lib)
 
-add_executable(${This} main.cpp)
+
+pybind11_add_module(${This} 
+    main.cpp
+)
 
 ###############################################################
 
-target_link_libraries(${This} 
+target_link_libraries(${This}
+    PRIVATE pybind11::embed
+    PRIVATE ${MPI_LIBRARIES}
     PRIVATE plate
     PRIVATE solveFE
-    ${MPI_LIBRARIES}
-    OpenMP::OpenMP_CXX
 )
+
+
 
 ###############################################################
