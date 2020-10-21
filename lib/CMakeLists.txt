@@ -1,15 +1,15 @@
 ###############################################################
-set(HEADERS_PLATE
-    Plate/include/plate.hpp
+set(PLATE_HEADERS
+    Plate/include/plate_rect.hpp
 )
 
-set(SOURCES_PLATE
-    Plate/src/plate.cpp
+set(PLATE_HEADERS
+    Plate/src/plate_rect.cpp
 )
 
 add_library(plate SHARED
-    ${HEADERS_PLATE}
-    ${SOURCES_PLATE}
+    ${PLATE_HEADERS}
+    ${PLATE_HEADERS}
 )
 
 target_include_directories(plate
@@ -18,14 +18,14 @@ target_include_directories(plate
 )
 
 ###############################################################
-set(HEADERS_SOLVEFE
+set(SOLVEFE_HEADERS
     SolveFE/include/element_routine.hpp
     SolveFE/include/material_routine.hpp
     SolveFE/include/utility.hpp
     SolveFE/include/solve.hpp
 )
 
-set(SOURCES_SOLVEFE
+set(SOLVEFE_SOURCES
     SolveFE/src/element_routine.cpp
     SolveFE/src/material_routine.cpp
     SolveFE/src/utility.cpp
@@ -33,8 +33,8 @@ set(SOURCES_SOLVEFE
 )
 
 add_library(solveFE SHARED
-    ${HEADERS_SOLVEFE}
-    ${SOURCES_SOLVEFE}
+    ${SOLVEFE_HEADERS}
+    ${SOLVEFE_SOURCES}
 )
 
 target_include_directories(solveFE

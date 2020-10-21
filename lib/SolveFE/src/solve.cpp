@@ -1,7 +1,11 @@
+/**
+ * Solving the FE
+*/
+
 #include "solve.hpp"
 
-SolveFE :: SolveFE(ArrayXXi& eN, ArrayXXd& nC, 
-                        ArrayXXd& bc, ArrayXXd& fc, Vector3d& matl)
+SolveFE :: SolveFE(Eigen::ArrayXXi& eN, Eigen::ArrayXXd& nC, 
+                        Eigen::ArrayXXd& bc, Eigen::ArrayXXd& fc, Eigen::Vector3d& matl)
 {
     matlParams = matl;
     elemNodes = eN;
@@ -40,11 +44,11 @@ void SolveFE :: solveInitialize()
  */
 void SolveFE :: connectivityMatrix()
 {
-    VectorXd u_local(24); u_local.setZero();
-    ArrayXXd hex8_rc(8,3);
-    MatrixXd K_el(24,24);
-    VectorXd Fint_el(24);
-    VectorXi nodes(8);
+    Eigen::VectorXd u_local(24); u_local.setZero();
+    Eigen::ArrayXXd hex8_rc(8,3);
+    Eigen::MatrixXd K_el(24,24);
+    Eigen::VectorXd Fint_el(24);
+    Eigen::VectorXi nodes(8);
     // u_local.setRandom();
 
     for (int i=0; i<totelems; ++i){
@@ -59,7 +63,7 @@ void SolveFE :: connectivityMatrix()
 /**
  * Sets the nodal coordinates for the given element
  */
-void SolveFE :: elemCoordinates(ArrayXXd& elemcoord, VectorXi& nodes)
+void SolveFE :: elemCoordinates(Eigen::ArrayXXd& elemcoord, Eigen::VectorXi& nodes)
 {
     for (int i=0;i<8;++i){
         elemcoord.row(i) = nodeCoords.row(nodes(i)-1);
@@ -70,7 +74,7 @@ void SolveFE :: elemCoordinates(ArrayXXd& elemcoord, VectorXi& nodes)
  * Returns the x,y,z nodes of given 8-nodes of a hex-element
  * (24 X 1)
  */
-void SolveFE :: localDisp(VectorXd& u_local, VectorXi& nodes)
+void SolveFE :: localDisp(Eigen::VectorXd& u_local, Eigen::VectorXi& nodes)
 {   
     int temp;
 

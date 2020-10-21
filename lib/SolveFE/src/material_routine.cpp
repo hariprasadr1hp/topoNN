@@ -1,3 +1,7 @@
+/**
+ * Material routine description
+*/
+
 #include "material_routine.hpp"
 
 Material :: Material()
@@ -7,35 +11,35 @@ Material :: Material()
     sigY = 415000000;
 }
 
-Material :: Material(Vector3d& matl)
+Material :: Material(Eigen::Vector3d& matl)
 {
     E = matl(0);
     Nu = matl(1);
     sigY = matl(2);
 }
 
-void Material :: setParams(Vector3d& matl)
+void Material :: setParams(Eigen::Vector3d& matl)
 {
     E = matl(0);
     Nu = matl(1);
     sigY = matl(2);
 }
 
-void Material :: getParams(Vector3d& matl)
+void Material :: getParams(Eigen::Vector3d& matl)
 {
     matl(0) = E;
     matl(1) = Nu;
     matl(2) = sigY;
 }
 
-void Material :: MaterialInitialize(MatrixXd& Cmat, VectorXd& Stress, 
-                                                VectorXd& Strain)
+void Material :: MaterialInitialize(Eigen::MatrixXd& Cmat, Eigen::VectorXd& Stress, 
+                                                Eigen::VectorXd& Strain)
 {
     Isotropic(Cmat);
     Stress = Cmat * Strain;
 }
 
-void Material :: Isotropic(MatrixXd& Cmat)
+void Material :: Isotropic(Eigen::MatrixXd& Cmat)
 {
     double constant,x,y,z;
     constant = E / ( (1+Nu) * (1-(2*Nu)) );
@@ -45,7 +49,7 @@ void Material :: Isotropic(MatrixXd& Cmat)
     Cmat.topLeftCorner(3,3) << y,x,x,
                                 x,y,x,
                                 x,x,y;
-    Cmat.bottomRightCorner(3,3) = z * Matrix3d::Identity();
+    Cmat.bottomRightCorner(3,3) = z * Eigen::Matrix3d::Identity();
     Cmat.topRightCorner(3,3).setZero();
     Cmat.bottomLeftCorner(3,3).setZero();
 }

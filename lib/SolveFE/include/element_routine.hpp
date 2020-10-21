@@ -1,36 +1,27 @@
-#ifndef ELEMENT_ROUTINE_HPP
-#define ELEMENT_ROUTINE_HPP
+/**
+ * Element routine description
+*/
+
+#pragma once
 
 #include <Eigen/Dense>
 #include "material_routine.hpp"
-#include <iostream>
-
-using namespace std;
-using namespace Eigen;
 
 class Element
 {
     private:
-        MatrixXd hex8_nc, hex8_rc;
-        VectorXd u_local;
-        Vector3d matlParams;
+        Eigen::MatrixXd hex8_nc, hex8_rc;
+        Eigen::VectorXd u_local;
+        Eigen::Vector3d matlParams;
         const double xi = 0.5773502692;
 
     public:
-        Element(ArrayXXd&,VectorXd&,Vector3d&);
-        void elemInitialize(MatrixXd&,VectorXd&);
+        Element(Eigen::ArrayXXd&,Eigen::VectorXd&,Eigen::Vector3d&);
+        void elemInitialize(Eigen::MatrixXd&,Eigen::VectorXd&);
         void natCoords();
-        void shapeFunc(VectorXd&);
-        void dN_natural(MatrixXd&);
-        void JacobianMat(Matrix3d&,MatrixXd&);
-        void dN_reference(MatrixXd&,Matrix3d&,MatrixXd&);
-        void BMatrix(MatrixXd&,MatrixXd&);
+        void shapeFunc(Eigen::VectorXd&);
+        void dN_natural(Eigen::MatrixXd&);
+        void JacobianMat(Eigen::Matrix3d&,Eigen::MatrixXd&);
+        void dN_reference(Eigen::MatrixXd&,Eigen::Matrix3d&,Eigen::MatrixXd&);
+        void BMatrix(Eigen::MatrixXd&,Eigen::MatrixXd&);
 };
-
-
-
-
-
-
-
-#endif //ELEMENT_ROUTINE_HPP

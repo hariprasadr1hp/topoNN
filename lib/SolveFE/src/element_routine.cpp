@@ -1,6 +1,10 @@
+/**
+ * Element routine description
+*/
+
 #include "element_routine.hpp"
 
-Element :: Element(ArrayXXd& eleminfo,VectorXd& disp,Vector3d& matl)
+Element :: Element(Eigen::ArrayXXd& eleminfo,Eigen::VectorXd& disp,Eigen::Vector3d& matl)
 { 
     natCoords();
     hex8_rc = eleminfo;
@@ -27,17 +31,17 @@ void Element :: natCoords()
 }
 
 
-void Element :: elemInitialize(MatrixXd& K_el, VectorXd& Fint_el)
+void Element :: elemInitialize(Eigen::MatrixXd& K_el, Eigen::VectorXd& Fint_el)
 {
     //initialize vectors and matrices
-    VectorXd shapeVector(8);
-    MatrixXd dN_nat(8,3);
-    Matrix3d Jmat;
-    MatrixXd dN_ref(8,3);
-    MatrixXd Bmat(6,24);
-    VectorXd Strain_el(6);
-    MatrixXd Cmat(6,6);
-    VectorXd Stress_el(6);
+    Eigen::VectorXd shapeVector(8);
+    Eigen::MatrixXd dN_nat(8,3);
+    Eigen::Matrix3d Jmat;
+    Eigen::MatrixXd dN_ref(8,3);
+    Eigen::MatrixXd Bmat(6,24);
+    Eigen::VectorXd Strain_el(6);
+    Eigen::MatrixXd Cmat(6,6);
+    Eigen::VectorXd Stress_el(6);
     Material matl(matlParams);
 
     //simulate
@@ -57,7 +61,7 @@ void Element :: elemInitialize(MatrixXd& K_el, VectorXd& Fint_el)
  * computes the Shape Function of the element,
  * vector of size (8 X 1)
  */
-void Element :: shapeFunc(VectorXd& shapeVector)
+void Element :: shapeFunc(Eigen::VectorXd& shapeVector)
 {
     shapeVector = (
         ( (hex8_nc.col(0).array() * xi) + 1 ) *
@@ -70,7 +74,7 @@ void Element :: shapeFunc(VectorXd& shapeVector)
  * Computes the derivatives of the shape function -> (8 X 3)
  * w.r.t its natural coordinates, for the hex8 element
  */
-void Element :: dN_natural(MatrixXd& dN_nat)
+void Element :: dN_natural(Eigen::MatrixXd& dN_nat)
 {
     dN_nat.col(0) = (
         ( (hex8_nc.col(0).array() *  1) + 1 ) *
@@ -95,7 +99,7 @@ void Element :: dN_natural(MatrixXd& dN_nat)
  * computes the Jacobian matrix of the element,
  * of size (3 X 3)
  */
-void Element :: JacobianMat(Matrix3d& Jmat , MatrixXd& dN_nat)
+void Element :: JacobianMat(Eigen::Matrix3d& Jmat , Eigen::MatrixXd& dN_nat)
 {
     Jmat = hex8_rc.transpose() * dN_nat;
 }
@@ -104,7 +108,7 @@ void Element :: JacobianMat(Matrix3d& Jmat , MatrixXd& dN_nat)
  * Computes the derivatives of the shape function -> (8 X 3)
  * w.r.t its reference coordinates, for the hex8 element
  */
-void Element :: dN_reference(MatrixXd& dN_ref, Matrix3d& Jmat, MatrixXd& dN_nat)
+void Element :: dN_reference(Eigen::MatrixXd& dN_ref, Eigen::Matrix3d& Jmat, Eigen::MatrixXd& dN_nat)
 {
     dN_ref = dN_nat * Jmat.inverse().transpose();
 }
@@ -112,7 +116,7 @@ void Element :: dN_reference(MatrixXd& dN_ref, Matrix3d& Jmat, MatrixXd& dN_nat)
 /**
  * Computes the strain-displacement matrix(B) -> (6 X 24)
  */
-void Element :: BMatrix(MatrixXd& Bmat, MatrixXd& dN_ref)
+void Element :: BMatrix(Eigen::MatrixXd& Bmat, Eigen::MatrixXd& dN_ref)
 {
     //e11
     Bmat.setZero();

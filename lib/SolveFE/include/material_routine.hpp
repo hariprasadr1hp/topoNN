@@ -1,9 +1,11 @@
-#ifndef MATERIAL_ROUTINE_HPP
-#define MATERIAL_ROUTINE_HPP
+/**
+ * Material routine description
+*/
+
+#pragma once
 
 #include <Eigen/Dense>
 
-using namespace Eigen;
 
 class Material
 {
@@ -12,20 +14,13 @@ class Material
 
     public:
         Material();
-        Material(Vector3d&);
-        void setParams(Vector3d&);
-        void getParams(Vector3d&);
-        void MaterialInitialize(MatrixXd&,
-                                VectorXd&,
-                                VectorXd&);
-        void Isotropic(MatrixXd&);
+        Material(Eigen::Vector3d&);
+        void setParams(Eigen::Vector3d&);
+        void getParams(Eigen::Vector3d&);
+        void MaterialInitialize(Eigen::MatrixXd&,
+                                Eigen::VectorXd&,
+                                Eigen::VectorXd&);
+        void Isotropic(Eigen::MatrixXd&);
 
         
 };
-
-
-
-
-
-
-#endif //MATERIAL_ROUTINE_HPP

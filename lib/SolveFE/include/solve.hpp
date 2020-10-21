@@ -1,5 +1,8 @@
-#ifndef SOLVE_HPP
-#define SOLVE_HPP
+/**
+ * Solving the FE
+*/
+
+#pragma once
 
 #include <iostream>
 #include <vector>
@@ -7,8 +10,6 @@
 #include <Eigen/Sparse>
 #include "element_routine.hpp"
 
-using namespace std;
-using namespace Eigen;
 
 struct dim{
     int x;
@@ -32,30 +33,24 @@ class SolveFE
 
     public:
         //constructor
-        SolveFE(ArrayXXi&,ArrayXXd&,ArrayXXd&,ArrayXXd&,Vector3d&);
+        SolveFE(Eigen::ArrayXXi&,Eigen::ArrayXXd&,Eigen::ArrayXXd&,Eigen::ArrayXXd&,Eigen::Vector3d&);
 
         //public variables
         int totelems, totnodes;
-        ArrayXXi elemNodes;
-        ArrayXXd nodeCoords;
-        ArrayXXd BC;
-        ArrayXXd FC;
-        Vector3d matlParams;
-        VectorXd Fint_global;
-        VectorXd Fext_global;
-        VectorXd u_global;
+        Eigen::ArrayXXi elemNodes;
+        Eigen::ArrayXXd nodeCoords;
+        Eigen::ArrayXXd BC;
+        Eigen::ArrayXXd FC;
+        Eigen::Vector3d matlParams;
+        Eigen::VectorXd Fint_global;
+        Eigen::VectorXd Fext_global;
+        Eigen::VectorXd u_global;
         SpMat K_global;
 
         // double E,Nu,sigY;
         
         void solveInitialize();
-        void elemCoordinates(ArrayXXd&,VectorXi&);
-        void localDisp(VectorXd&,VectorXi&);
+        void elemCoordinates(Eigen::ArrayXXd&,Eigen::VectorXi&);
+        void localDisp(Eigen::VectorXd&,Eigen::VectorXi&);
         void connectivityMatrix();
 };
-
-
-
-
-
-#endif //SOLVE_FE_HPP

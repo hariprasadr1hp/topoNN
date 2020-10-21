@@ -1,8 +1,12 @@
-#include "plate.hpp"
+/**
+ * Defining mesh for reactangular plate using cartesian coordinates
+*/
+
+#include "plate_rect.hpp"
 #include <iostream>
 
 
-Plate :: Plate(Vector3i& elem)
+Plate :: Plate(Eigen::Vector3i& elem)
 {
     nel.x = elem(0);
     nel.y = elem(1);
@@ -15,7 +19,7 @@ void Plate :: structInitialize()
     totelems = nel.x * nel.y * nel.z;
     totnodes = (nel.x + 1) * (nel.y + 1) * (nel.z + 1);
     nodelist.resize(totnodes);
-    nodelist = VectorXd::LinSpaced(totnodes,1,totnodes);
+    nodelist = Eigen::VectorXd::LinSpaced(totnodes,1,totnodes);
     genElemNodes();
     genNodeCoords();
 }
@@ -46,7 +50,7 @@ void Plate :: getElemXYZ(Elems& elem)
  * 
  * @param coord The origin coordinates of the Element
 */
-int Plate :: CoordtoNode(Vector3d& coord)
+int Plate :: CoordtoNode(Eigen::Vector3d& coord)
 {   
     if (checkCoords(coord)){
         int node = (coord(2) * (nel.x+1) * (nel.y+1)) + 
@@ -65,7 +69,7 @@ int Plate :: CoordtoNode(Vector3d& coord)
  * @param coord The coordinates of the Node
  * @param node node ID
 */
-void Plate :: NodetoCoord(Vector3d& coord, int node)
+void Plate :: NodetoCoord(Eigen::Vector3d& coord, int node)
 {
     if (checkNodeID(node)){
         node = node - 1;
@@ -85,7 +89,7 @@ void Plate :: NodetoCoord(Vector3d& coord, int node)
  * @param origin The origin coordinates of the Node
  * @return elem Element ID
 */    
-void Plate :: getElemOrigin(Vector3d& origin, int elem)
+void Plate :: getElemOrigin(Eigen::Vector3d& origin, int elem)
 {
         int x,y,z,temp1,temp2;
         temp1 = elem - 1;
@@ -102,7 +106,7 @@ void Plate :: getElemOrigin(Vector3d& origin, int elem)
  * @param origin The origin coordinates of the Element
  * @return elem Element ID
 */
-int Plate :: getElemID(Vector3d& origin)
+int Plate :: getElemID(Eigen::Vector3d& origin)
 {
     if (checkOrigin(origin)){
         int elem;
@@ -125,11 +129,11 @@ int Plate :: getElemID(Vector3d& origin)
  * @param hexid The node IDs of the element
  * @param origin The origin coordinates of the element
 */
-void Plate :: getHex8IDs(VectorXi& hexid, Vector3d& origin)
+void Plate :: getHex8IDs(Eigen::VectorXi& hexid, Eigen::Vector3d& origin)
 {
     // hexid(8);
     if (hexid.size() != 8){
-        cout << "Size doesn't match" << endl;
+        std::cout << "Size doesn't match" << std::endl;
     }
     if (checkOrigin(origin)){
         hexid(0) = CoordtoNode(origin);
@@ -142,7 +146,7 @@ void Plate :: getHex8IDs(VectorXi& hexid, Vector3d& origin)
         hexid(7) = hexid(6) + 1;
     }
     else{
-        cout << "Origin not valid" << endl;
+        std::cout << "Origin not valid" << std::endl;
     }
 }
 
@@ -167,7 +171,7 @@ bool Plate :: checkNodeID(int node)
 /**
  * checks whether the node coordinates exist
  */
-bool Plate :: checkCoords(Vector3d& coords)
+bool Plate :: checkCoords(Eigen::Vector3d& coords)
 {
     if ((coords(0) >= nel.x+1) || (coords(0) < 0)){
         return false;
@@ -184,7 +188,7 @@ bool Plate :: checkCoords(Vector3d& coords)
 /**
  * checks whether the origin coordinates exist
  */
-bool Plate :: checkOrigin(Vector3d& origin)
+bool Plate :: checkOrigin(Eigen::Vector3d& origin)
 {
     if ((origin(0) >= nel.x) || (origin(0) < 0)){
         return false;
@@ -201,8 +205,8 @@ bool Plate :: checkOrigin(Vector3d& origin)
 /// Generates Element-Nodes Connectivity Database
 void Plate :: genElemNodes()
 {
-    VectorXi hex8(8);
-    Vector3d origin;
+    Eigen::VectorXi hex8(8);
+    Eigen::Vector3d origin;
     // elemNodes.resize(totelems,9);
     elemNodes.resize(totelems,8);
     elemNodes.setZero();
@@ -222,7 +226,7 @@ void Plate :: genElemNodes()
  */
 void Plate :: genNodeCoords()
 {
-    Vector3d coords;
+    Eigen::Vector3d coords;
     // nodeCoords.resize(totnodes,4);
     nodeCoords.resize(totnodes,3);
     nodeCoords.setZero();
@@ -239,7 +243,7 @@ void Plate :: genNodeCoords()
 /**
  * Writes the node IDs on the left side to a vector
  */
-void Plate :: getLeft(VectorXd& left)
+void Plate :: getLeft(Eigen::VectorXd& left)
 {   
     int temp,count;
     temp = 2*(nel.z+1);
@@ -255,7 +259,7 @@ void Plate :: getLeft(VectorXd& left)
 /**
  * Writes the node IDs on the right side to a vector
  */
-void Plate :: getRight(VectorXd& right)
+void Plate :: getRight(Eigen::VectorXd& right)
 {
     int temp,count;
     temp = 2*(nel.z+1);
@@ -270,7 +274,7 @@ void Plate :: getRight(VectorXd& right)
 /**
  * Writes the node IDs on the top side to a vector
  */
-void Plate :: getUp(VectorXd& top)
+void Plate :: getUp(Eigen::VectorXd& top)
 {
     int temp,count;
     temp = 2*(nel.x+1);
@@ -285,7 +289,7 @@ void Plate :: getUp(VectorXd& top)
 /**
  * Writes the node IDs on the bottom side to a vector
  */
-void Plate :: getDown(VectorXd& bottom)
+void Plate :: getDown(Eigen::VectorXd& bottom)
 {
     int temp,count;
     temp = (nel.x+1)*(nel.y+1);
@@ -297,7 +301,7 @@ void Plate :: getDown(VectorXd& bottom)
     }
 }
 
-void Plate :: setValues(ArrayXXd& matx, VectorXd& pos, Vector3d& val)
+void Plate :: setValues(Eigen::ArrayXXd& matx, Eigen::VectorXd& pos, Eigen::Vector3d& val)
 {
     int nodes;
     nodes = pos.size();
