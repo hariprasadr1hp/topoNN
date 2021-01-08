@@ -1,4 +1,5 @@
 .vscode/
+.vim/
 */__pycache__
 
 #files
@@ -8,6 +9,7 @@
 *.out
 
 #folders
+.cache/
 build/
 data/
 info/
