@@ -18,12 +18,6 @@ find_package(Threads REQUIRED)
 
 #######################################################################
 
-# #Pybind
-# find_package (pybind11 REQUIRED)
-# message("Python VERSION: ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}")
-
-#######################################################################
-
 # #OpenMP
 find_package(OpenMP)
 if (OpenMP_FOUND)
@@ -45,46 +39,8 @@ endif (MPI_FOUND)
 
 #######################################################################
 
-# #Eigen
-find_package (Eigen3 REQUIRED)
-if (Eigen3_FOUND)
-    message("Eigen3 Found!")
-else (Eigen3_FOUND)
-    message(SEND_ERROR "This application cannot compile without Eigen3")
-endif (Eigen3_FOUND)
-include_directories(${EIGEN3_INCLUDE_DIR})
-
-#######################################################################
-
-# #Qt
-# message("------------------------------------")
-# message("---- LOADING Qt...")
-# find_package(Qt5 COMPONENTS Widgets Core Gui PrintSupport REQUIRED)
-
-# if (${Qt5_FOUND})
-#     message("-- Qt5_VERSION: ${Qt5_VERSION}")
-# else()
-#     message("-- Qt5 NOT FOUND!")
-# endif()
-
-# # include(${QT_USE_FILE})
-# add_definitions(${QT_DEFINITIONS})
-
-# set(QT5_LIBRARIES
-#     Qt5::Widgets
-#     Qt5::Core
-#     Qt5::Gui
-#     Qt5::PrintSupport
-# )
-
-# include_directories(${QT_INCLUDES})
-
-# get_target_property(QtCore_location Qt5::Core LOCATION)
-
-#######################################################################
-
 #thirdparty
-# include_directories(thirdparty/eigen)
+include_directories(thirdparty/eigen)
 add_subdirectory(thirdparty/pybind11)
 
 #######################################################################
@@ -96,11 +52,8 @@ add_subdirectory(tests)
 
 #######################################################################
 
-set(CMAKE_C_COMPILER /usr/bin/mpicc)
-set(CMAKE_CXX_COMPILER /usr/bin/mpiCC)
-
-# set(CMAKE_C_COMPILER /usr/bin/gcc)
-# set(CMAKE_CXX_COMPILER /usr/bin/g++)
+set(CMAKE_C_COMPILER /usr/bin/gcc)
+set(CMAKE_CXX_COMPILER /usr/bin/g++)
 
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fPIC -Wall -O3 -std=c++11")
  
@@ -125,7 +78,6 @@ add_executable(${This} main.cpp)
 
 target_link_libraries(${This}
     # PRIVATE pybind11::embed
-    PRIVATE ${MPI_LIBRARIES}
     PRIVATE plate
     PRIVATE solveFE
 )
