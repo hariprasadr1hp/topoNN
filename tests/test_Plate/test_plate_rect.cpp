@@ -1,8 +1,7 @@
 #include <gtest/gtest.h>
 #include <plate_rect.hpp>
 
-struct TestPlate : testing :: Test
-{
+struct TestPlate : testing :: Test{
     Plate* plate;
 
     TestPlate(){

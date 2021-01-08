@@ -6,16 +6,14 @@
 #include <iostream>
 
 
-Plate :: Plate(Eigen::Vector3i& elem)
-{
+Plate :: Plate(Eigen::Vector3i& elem){
     nel.x = elem(0);
     nel.y = elem(1);
     nel.z = elem(2);
     structInitialize();
 }
 
-void Plate :: structInitialize()
-{
+void Plate :: structInitialize(){
     totelems = nel.x * nel.y * nel.z;
     totnodes = (nel.x + 1) * (nel.y + 1) * (nel.z + 1);
     nodelist.resize(totnodes);
@@ -27,8 +25,7 @@ void Plate :: structInitialize()
 /**
  * sets the no. of elements in each direction
  */
-void Plate :: setElemXYZ(Elems& elem)
-{
+void Plate :: setElemXYZ(Elems& elem){
     nel.x = elem.x;
     nel.y = elem.y;
     nel.z = elem.z;
@@ -38,8 +35,7 @@ void Plate :: setElemXYZ(Elems& elem)
 /**
  * retrieves the no. of elements in each direction
  */
-void Plate :: getElemXYZ(Elems& elem)
-{
+void Plate :: getElemXYZ(Elems& elem){
     elem.x = nel.x;
     elem.y = nel.y;
     elem.z = nel.z;
@@ -50,8 +46,7 @@ void Plate :: getElemXYZ(Elems& elem)
  * 
  * @param coord The origin coordinates of the Element
 */
-int Plate :: CoordtoNode(Eigen::Vector3d& coord)
-{   
+int Plate :: CoordtoNode(Eigen::Vector3d& coord){   
     if (checkCoords(coord)){
         int node = (coord(2) * (nel.x+1) * (nel.y+1)) + 
                     (coord(1) * (nel.x+1)) + coord(0) + 1;
@@ -69,8 +64,7 @@ int Plate :: CoordtoNode(Eigen::Vector3d& coord)
  * @param coord The coordinates of the Node
  * @param node node ID
 */
-void Plate :: NodetoCoord(Eigen::Vector3d& coord, int node)
-{
+void Plate :: NodetoCoord(Eigen::Vector3d& coord, int node){
     if (checkNodeID(node)){
         node = node - 1;
         coord(2) = node / ((nel.x+1) * (nel.y+1));
@@ -89,8 +83,7 @@ void Plate :: NodetoCoord(Eigen::Vector3d& coord, int node)
  * @param origin The origin coordinates of the Node
  * @return elem Element ID
 */    
-void Plate :: getElemOrigin(Eigen::Vector3d& origin, int elem)
-{
+void Plate :: getElemOrigin(Eigen::Vector3d& origin, int elem){
         int x,y,z,temp1,temp2;
         temp1 = elem - 1;
         z = temp1 / (nel.x*nel.y);
@@ -106,8 +99,7 @@ void Plate :: getElemOrigin(Eigen::Vector3d& origin, int elem)
  * @param origin The origin coordinates of the Element
  * @return elem Element ID
 */
-int Plate :: getElemID(Eigen::Vector3d& origin)
-{
+int Plate :: getElemID(Eigen::Vector3d& origin){
     if (checkOrigin(origin)){
         int elem;
         elem = int(
@@ -129,8 +121,7 @@ int Plate :: getElemID(Eigen::Vector3d& origin)
  * @param hexid The node IDs of the element
  * @param origin The origin coordinates of the element
 */
-void Plate :: getHex8IDs(Eigen::VectorXi& hexid, Eigen::Vector3d& origin)
-{
+void Plate :: getHex8IDs(Eigen::VectorXi& hexid, Eigen::Vector3d& origin){
     // hexid(8);
     if (hexid.size() != 8){
         std::cout << "Size doesn't match" << std::endl;
@@ -153,8 +144,7 @@ void Plate :: getHex8IDs(Eigen::VectorXi& hexid, Eigen::Vector3d& origin)
 /**
  * checks whether an element with the following ID exist
  */
-bool Plate :: checkElemID(int elem)
-{
+bool Plate :: checkElemID(int elem){
     // return (elemNodes.col(0) == elem).any();
     return true ? (elem > 0 && elem <= totelems) : false;
 }
@@ -162,8 +152,7 @@ bool Plate :: checkElemID(int elem)
 /**
  * checks whether a node with the following ID exist
  */
-bool Plate :: checkNodeID(int node)
-{
+bool Plate :: checkNodeID(int node){
     // return (nodeCoords.col(0) == node).any();
     return true ? (node > 0 && node <= totnodes) : false;
 }
@@ -171,8 +160,7 @@ bool Plate :: checkNodeID(int node)
 /**
  * checks whether the node coordinates exist
  */
-bool Plate :: checkCoords(Eigen::Vector3d& coords)
-{
+bool Plate :: checkCoords(Eigen::Vector3d& coords){
     if ((coords(0) >= nel.x+1) || (coords(0) < 0)){
         return false;
     }
@@ -188,8 +176,7 @@ bool Plate :: checkCoords(Eigen::Vector3d& coords)
 /**
  * checks whether the origin coordinates exist
  */
-bool Plate :: checkOrigin(Eigen::Vector3d& origin)
-{
+bool Plate :: checkOrigin(Eigen::Vector3d& origin){
     if ((origin(0) >= nel.x) || (origin(0) < 0)){
         return false;
     }
@@ -203,8 +190,7 @@ bool Plate :: checkOrigin(Eigen::Vector3d& origin)
 }
 
 /// Generates Element-Nodes Connectivity Database
-void Plate :: genElemNodes()
-{
+void Plate :: genElemNodes(){
     Eigen::VectorXi hex8(8);
     Eigen::Vector3d origin;
     // elemNodes.resize(totelems,9);
@@ -224,8 +210,7 @@ void Plate :: genElemNodes()
 /**
  * Generates Node-Coordinates Database
  */
-void Plate :: genNodeCoords()
-{
+void Plate :: genNodeCoords(){
     Eigen::Vector3d coords;
     // nodeCoords.resize(totnodes,4);
     nodeCoords.resize(totnodes,3);
@@ -243,8 +228,7 @@ void Plate :: genNodeCoords()
 /**
  * Writes the node IDs on the left side to a vector
  */
-void Plate :: getLeft(Eigen::VectorXd& left)
-{   
+void Plate :: getLeft(Eigen::VectorXd& left){   
     int temp,count;
     temp = 2*(nel.z+1);
     left.resize(temp);
@@ -259,8 +243,7 @@ void Plate :: getLeft(Eigen::VectorXd& left)
 /**
  * Writes the node IDs on the right side to a vector
  */
-void Plate :: getRight(Eigen::VectorXd& right)
-{
+void Plate :: getRight(Eigen::VectorXd& right){
     int temp,count;
     temp = 2*(nel.z+1);
     right.resize(temp);
@@ -274,8 +257,7 @@ void Plate :: getRight(Eigen::VectorXd& right)
 /**
  * Writes the node IDs on the top side to a vector
  */
-void Plate :: getUp(Eigen::VectorXd& top)
-{
+void Plate :: getUp(Eigen::VectorXd& top){
     int temp,count;
     temp = 2*(nel.x+1);
     top.resize(temp);
@@ -289,8 +271,7 @@ void Plate :: getUp(Eigen::VectorXd& top)
 /**
  * Writes the node IDs on the bottom side to a vector
  */
-void Plate :: getDown(Eigen::VectorXd& bottom)
-{
+void Plate :: getDown(Eigen::VectorXd& bottom){
     int temp,count;
     temp = (nel.x+1)*(nel.y+1);
     bottom.resize(temp);
@@ -301,8 +282,7 @@ void Plate :: getDown(Eigen::VectorXd& bottom)
     }
 }
 
-void Plate :: setValues(Eigen::ArrayXXd& matx, Eigen::VectorXd& pos, Eigen::Vector3d& val)
-{
+void Plate :: setValues(Eigen::ArrayXXd& matx, Eigen::VectorXd& pos, Eigen::Vector3d& val){
     int nodes;
     nodes = pos.size();
     matx.resize(nodes,4);

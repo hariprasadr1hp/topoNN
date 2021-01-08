@@ -4,14 +4,13 @@
 
 #include "solve.hpp"
 
-SolveFE :: SolveFE(Eigen::ArrayXXi& eN, Eigen::ArrayXXd& nC, 
-                        Eigen::ArrayXXd& bc, Eigen::ArrayXXd& fc, Eigen::Vector3d& matl)
-{
+SolveFE :: SolveFE(Eigen::ArrayXXi& _elemNodes, Eigen::ArrayXXd& _nodeCoords, 
+                        Eigen::ArrayXXd& _BC, Eigen::ArrayXXd& _FC, Eigen::Vector3d& matl){
     matlParams = matl;
-    elemNodes = eN;
-    nodeCoords = nC;
-    FC = fc;
-    BC = bc;
+    elemNodes = _elemNodes;
+    nodeCoords = _nodeCoords;
+    BC = _BC;
+    FC = _FC;
     totelems = elemNodes.col(0).size();
     totnodes = nodeCoords.col(0).size();
     K_global.resize(totnodes*3, totnodes*3);
@@ -24,8 +23,7 @@ SolveFE :: SolveFE(Eigen::ArrayXXi& eN, Eigen::ArrayXXd& nC,
 /**
  * Initialize the solver
  */
-void SolveFE :: solveInitialize()
-{
+void SolveFE :: solveInitialize(){
  
     connectivityMatrix();
 
@@ -42,8 +40,7 @@ void SolveFE :: solveInitialize()
 /**
  * Assembles local stiffness matrices to form a global one
  */
-void SolveFE :: connectivityMatrix()
-{
+void SolveFE :: connectivityMatrix(){
     Eigen::VectorXd u_local(24); u_local.setZero();
     Eigen::ArrayXXd hex8_rc(8,3);
     Eigen::MatrixXd K_el(24,24);
@@ -63,8 +60,7 @@ void SolveFE :: connectivityMatrix()
 /**
  * Sets the nodal coordinates for the given element
  */
-void SolveFE :: elemCoordinates(Eigen::ArrayXXd& elemcoord, Eigen::VectorXi& nodes)
-{
+void SolveFE :: elemCoordinates(Eigen::ArrayXXd& elemcoord, Eigen::VectorXi& nodes){
     for (int i=0;i<8;++i){
         elemcoord.row(i) = nodeCoords.row(nodes(i)-1);
     }
@@ -74,8 +70,7 @@ void SolveFE :: elemCoordinates(Eigen::ArrayXXd& elemcoord, Eigen::VectorXi& nod
  * Returns the x,y,z nodes of given 8-nodes of a hex-element
  * (24 X 1)
  */
-void SolveFE :: localDisp(Eigen::VectorXd& u_local, Eigen::VectorXi& nodes)
-{   
+void SolveFE :: localDisp(Eigen::VectorXd& u_local, Eigen::VectorXi& nodes){   
     int temp;
 
     for (int i=0;i<8;++i){

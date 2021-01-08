@@ -16,12 +16,14 @@ class Element
         const double xi = 0.5773502692;
 
     public:
-        Element(Eigen::ArrayXXd&,Eigen::VectorXd&,Eigen::Vector3d&);
-        void elemInitialize(Eigen::MatrixXd&,Eigen::VectorXd&);
+        Element(Eigen::ArrayXXd& eleminfo, Eigen::VectorXd& disp, 
+                Eigen::Vector3d& matl);
+        void elemInitialize(Eigen::MatrixXd& K_el,Eigen::VectorXd& Fint_el);
         void natCoords();
-        void shapeFunc(Eigen::VectorXd&);
-        void dN_natural(Eigen::MatrixXd&);
-        void JacobianMat(Eigen::Matrix3d&,Eigen::MatrixXd&);
-        void dN_reference(Eigen::MatrixXd&,Eigen::Matrix3d&,Eigen::MatrixXd&);
-        void BMatrix(Eigen::MatrixXd&,Eigen::MatrixXd&);
+        void shapeFunc(Eigen::VectorXd& shapeVector);
+        void dN_natural(Eigen::MatrixXd& dN_nat);
+        void JacobianMat(Eigen::Matrix3d& Jmat, Eigen::MatrixXd& dN_nat);
+        void dN_reference(Eigen::MatrixXd& dN_ref, Eigen::Matrix3d& Jmat,
+                            Eigen::MatrixXd& dN_nat);
+        void BMatrix(Eigen::MatrixXd& Bmat, Eigen::MatrixXd& dN_ref);
 };

@@ -26,14 +26,18 @@ struct xyz{
 typedef Eigen::SparseMatrix<double> SpMat;
 typedef Eigen::Triplet<double> T;
 
-class SolveFE
-{
+class SolveFE{
+    
     private:
 
 
     public:
         //constructor
-        SolveFE(Eigen::ArrayXXi&,Eigen::ArrayXXd&,Eigen::ArrayXXd&,Eigen::ArrayXXd&,Eigen::Vector3d&);
+        SolveFE(Eigen::ArrayXXi& _elemNodes,
+                Eigen::ArrayXXd& _nodeCoords,
+                Eigen::ArrayXXd& _BC,
+                Eigen::ArrayXXd& _FC,
+                Eigen::Vector3d& matl);
 
         //public variables
         int totelems, totnodes;
@@ -50,7 +54,8 @@ class SolveFE
         // double E,Nu,sigY;
         
         void solveInitialize();
-        void elemCoordinates(Eigen::ArrayXXd&,Eigen::VectorXi&);
-        void localDisp(Eigen::VectorXd&,Eigen::VectorXi&);
+        void elemCoordinates(Eigen::ArrayXXd& elemCoord,
+                                Eigen::VectorXi& nodes);
+        void localDisp(Eigen::VectorXd& u_local, Eigen::VectorXi& nodes);
         void connectivityMatrix();
 };

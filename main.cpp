@@ -2,8 +2,8 @@
  * Main file
 */
 
-#include<iostream>
-#include<Eigen/Core>
+#include <iostream>
+#include <Eigen/Core>
 #include "plate_rect.hpp"
 #include "solve.hpp"
 
@@ -11,15 +11,14 @@
 
 void setParams();
 
-int main(int argc, char *argv[])
-{    
+int main(int argc, char *argv[]){
+    std::cout << "-------------------------" << std::endl;
     setParams();
-    std::cout << 5 << std::endl;
+
     return 0;
 }
 
-void setParams()
-{
+void setParams(){
     //define elements
     Eigen::Vector3i nel = {4,1,2};
     
@@ -40,7 +39,7 @@ void setParams()
     
     //define material parameters
     Eigen::Vector3d matl = {2000000000, 0.3, 415000000};
-    
+
     //initialize solver object  
     SolveFE solve(
         plate.elemNodes,
@@ -50,15 +49,13 @@ void setParams()
         matl
     );
 
+    printf("Total elements: %d\n",solve.totelems);
+    printf("Total nodes: %d\n",solve.totnodes);
+    std::cout << "------------------" << std::endl;
     std::cout << solve.elemNodes << std::endl;
-
-    // cout << solve.totelems << endl;
-    // cout << solve.totnodes << endl;
-    // cout << "------------------" << endl;
-    // cout << solve.elemNodes << endl;
-    // cout << "------------------" << endl;
-    // cout << solve.nodeCoords << endl;
-    // cout << "------------------" << endl;
+    std::cout << "------------------" << std::endl;
+    std::cout << solve.nodeCoords << std::endl;
+    std::cout << "------------------" << std::endl;
     
 }
 

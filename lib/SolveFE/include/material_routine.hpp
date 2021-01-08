@@ -14,13 +14,13 @@ class Material
 
     public:
         Material();
-        Material(Eigen::Vector3d&);
-        void setParams(Eigen::Vector3d&);
-        void getParams(Eigen::Vector3d&);
-        void MaterialInitialize(Eigen::MatrixXd&,
-                                Eigen::VectorXd&,
-                                Eigen::VectorXd&);
-        void Isotropic(Eigen::MatrixXd&);
+        Material(Eigen::Vector3d& matl);
+        void setParams(Eigen::Vector3d& matl);
+        void getParams(Eigen::Vector3d& matl);
+        void MaterialInitialize(Eigen::MatrixXd& Cmat,
+                                Eigen::VectorXd& Stress,
+                                Eigen::VectorXd& Strain);
+        void Isotropic(Eigen::MatrixXd& Cmat);
 
         
 };
