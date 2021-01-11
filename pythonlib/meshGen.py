@@ -14,6 +14,7 @@ class Plate:
         self.nelz = nelz
         self.initialize()
         self.genElemNodes()
+        self.genNodeCoords()
 
     def initialize(self):
         self.totelems = self.nelx * self.nely * self.nelz
@@ -162,3 +163,7 @@ class Plate:
             self.elemNodes[elem,:] = self.getHex8IDs(self.getElemOrigin(elem+1))
 
 
+    def genNodeCoords(self):
+        self.nodeCoords = np.zeros((self.totnodes,3),dtype=float)
+        for node in range(self.totnodes):
+            self.nodeCoords[node,:] = self.nodeToCoord(node+1)
