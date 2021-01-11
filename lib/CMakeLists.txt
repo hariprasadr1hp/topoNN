@@ -3,13 +3,13 @@ set(PLATE_HEADERS
     Plate/include/plate_rect.hpp
 )
 
-set(PLATE_HEADERS
+set(PLATE_SOURCES
     Plate/src/plate_rect.cpp
 )
 
 add_library(plate SHARED
     ${PLATE_HEADERS}
-    ${PLATE_HEADERS}
+    ${PLATE_SOURCES}
 )
 
 target_include_directories(plate
