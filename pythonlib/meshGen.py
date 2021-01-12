@@ -130,40 +130,45 @@ class Plate:
         """
         Returns the nodes to the left
         """
-        pass 
-
+        return np.arange(1, self.totnodes, (self.nelx+1))
 
     def getRight(self):
         """
         Returns the nodes to the right
         """
-        pass 
+        return np.arange((self.nelx+1), self.totnodes, (self.nelx+1))
 
     def getUp(self):
         """
         Returns the nodes on top
         """
-        pass 
+        return np.arange(1, ((self.nelx+1)*(self.nely+1))+1)
 
     def getDown(self):
         """
         Returns the nodes on the bottom
         """
-        pass 
+        return np.arange(self.totnodes-((self.nelx+1)*(self.nely+1))+1, self.totnodes+1)
 
-    def setValues(self, elem):
+    def getAll(self):
         """
-        Returns the x,y,z coordinates of the element
+        Returns all the nodes of the model
         """
-        pass
+        return np.arange(1,self.totnodes+1)
 
     def genElemNodes(self):
-        self.elemNodes = np.zeros((self.totelems,8),dtype=int)
+        """
+        Generates the Element-Node connectivity table
+        """
+        self.elemNodes = np.zeros((self.totelems, 8), dtype=int)
         for elem in range(self.totelems):
-            self.elemNodes[elem,:] = self.getHex8IDs(self.getElemOrigin(elem+1))
-
+            self.elemNodes[elem, :] = self.getHex8IDs(
+                self.getElemOrigin(elem+1))
 
     def genNodeCoords(self):
-        self.nodeCoords = np.zeros((self.totnodes,3),dtype=float)
+        """
+        Generates the Node-coordinates table
+        """
+        self.nodeCoords = np.zeros((self.totnodes, 3), dtype=float)
         for node in range(self.totnodes):
-            self.nodeCoords[node,:] = self.nodeToCoord(node+1)
+            self.nodeCoords[node, :] = self.nodeToCoord(node+1)
