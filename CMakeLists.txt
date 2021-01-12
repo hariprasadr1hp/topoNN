@@ -65,19 +65,19 @@ add_subdirectory(lib)
 #######################################################################
 
 #as a mainfile
-# add_executable(${This} main.cpp)
+add_executable(${This} main.cpp)
 
 #######################################################################
 
 # #as a python module
-pybind11_add_module(${This}
-    wrapper.cpp
-)
+# pybind11_add_module(${This}
+#     wrapper.cpp
+# )
 
 #######################################################################
 
 target_link_libraries(${This}
-    PRIVATE pybind11::embed
+    # PRIVATE pybind11::embed
     PRIVATE plate
     PRIVATE solveFE
 )

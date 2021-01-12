@@ -30,9 +30,11 @@ void setParams(){
     Eigen::Vector3d force = {0,500,0};
 
     Eigen::ArrayXXd BC,FC;
-    Eigen::VectorXd left, right;
+    Eigen::VectorXd left, right, up, down;
     plate.getLeft(left);
     plate.getRight(right);
+    plate.getUp(up);
+    plate.getDown(down);
 
     plate.setValues(BC,left,disp);
     plate.setValues(FC,right,force);
@@ -49,14 +51,22 @@ void setParams(){
         matl
     );
 
-    printf("Total elements: %d\n",solve.totelems);
-    printf("Total nodes: %d\n",solve.totnodes);
-    std::cout << "------------------" << std::endl;
-    std::cout << solve.elemNodes << std::endl;
-    std::cout << "------------------" << std::endl;
-    std::cout << solve.nodeCoords << std::endl;
-    std::cout << "------------------" << std::endl;
+    // printf("Total elements: %d\n",solve.totelems);
+    // printf("Total nodes: %d\n",solve.totnodes);
+    // std::cout << "------------------" << std::endl;
+    // std::cout << solve.elemNodes << std::endl;
+    // std::cout << "------------------" << std::endl;
+    // std::cout << solve.nodeCoords << std::endl;
+    // std::cout << "------------------" << std::endl;
     
+    std::cout << left << std::endl;
+    std::cout << "------------------" << std::endl;
+    std::cout << right << std::endl;
+    std::cout << "------------------" << std::endl;
+    std::cout << up << std::endl;
+    std::cout << "------------------" << std::endl;
+    std::cout << down << std::endl;
+    std::cout << "------------------" << std::endl;
 }
 
 //#####################################################################
