@@ -37,16 +37,22 @@ class Plate:
     def coordToNode(self, coord: tuple) -> int:
         """
         Returns the Global node ID for the given origin coordinates
+
+        :type coord: tuple
+        :param coord: the x,y,z coordinates of the node
         """
         if self.checkCoords(coord):
             node = (coord[2] * (self.nelx+1) * (self.nely+1)) + \
                 (coord[1] * (self.nelx+1)) + coord[0] + 1
             return node
-        return -1
+        raise Exception("Invalid Coordinates")
 
     def nodeToCoord(self, node: int) -> tuple:
         """
         Returns the x,y,z coordinates of the element
+
+        :type node: int
+        :param node: the node ID
         """
         if self.checkNodeID(node):
             node = node - 1
@@ -55,10 +61,14 @@ class Plate:
             coordY = temp // (self.nelx+1)
             coordX = temp % (self.nelx+1)
             return (coordX, coordY, coordZ)
+        raise Exception("Invalid Node")
 
     def getElemOrigin(self, elem: int) -> tuple:
         """
         Returns the coordinates (x,y,z) of the element's origin
+
+        :type elem: int
+        :param elem: the element ID
         """
         temp1 = elem - 1
         coordZ = temp1 // (self.nelx * self.nely)
@@ -69,7 +79,10 @@ class Plate:
 
     def getElemID(self, origin: tuple) -> int:
         """
-        Returns coordinates (x,y,z) of the element's origin 
+        Returns the element ID for the given origin
+
+        :type origin: tuple
+        :param origin: the coordinates of the element's origin
         """
         if self.checkOrigin(origin):
             return int((origin[2] * self.nelx * self.nely) +
@@ -79,8 +92,11 @@ class Plate:
 
     def getHex8IDs(self, origin: tuple):
         """
-        Writes the global IDs of the nodes of an element, given the 
+        Writes the global IDs of the nodes of an element, given the
         coordinates of an element at its origin
+
+        :type origin: tuple
+        :param origin: the coordinates of the element's origin
         """
         if self.checkOrigin(origin):
             hexID = np.zeros((8), dtype=int)
@@ -95,22 +111,30 @@ class Plate:
             return hexID
         raise Exception("Invalid coordinates")
 
-
     def checkElemID(self, elem: int) -> bool:
         """
         checks whether an element with the following ID exist
+
+        :type elem: int
+        :param elem: the element ID
         """
         return bool(0 < elem <= self.totelems)
 
     def checkNodeID(self, node: int) -> bool:
         """
         checks whether a node with the following ID exist
+
+        :type node: int
+        :param node: the node ID
         """
         return bool(0 < node <= self.totnodes)
 
     def checkCoords(self, coords: tuple) -> bool:
         """
         checks whether the node coordinates exist
+
+        :type coords: tuple
+        :param coords: (x,y,z) coordinates
         """
         onX = bool(0 <= coords[0] <= self.nelx)
         onY = bool(0 <= coords[1] <= self.nely)
@@ -120,6 +144,9 @@ class Plate:
     def checkOrigin(self, origin: tuple) -> bool:
         """
         checks whether the origin coordinates exist
+
+        :type origin: tuple
+        :param origin: the coordinates of the element's origin
         """
         onX = bool(0 <= origin[0] < self.nelx)
         onY = bool(0 <= origin[1] < self.nely)
