@@ -11,3 +11,4 @@ sphinx_rtd_theme
 recommonmark
 sphinxcontrib-spelling
 nbsphinx
+pytest

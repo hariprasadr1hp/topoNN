@@ -1,5 +1,6 @@
 .vscode/
 .vim/
+.pytest_cache/
 */__pycache__
 
 #files
