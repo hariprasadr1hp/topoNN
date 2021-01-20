@@ -4,7 +4,7 @@ meshGen
 import numpy as np
 
 
-class Plate:
+class Plate3D:
     def __init__(self, nelx: int, nely: int, nelz: int):
         """
         initializing class
@@ -163,7 +163,7 @@ class Plate:
         """
         Returns the nodes to the right
         """
-        return np.arange((self.nelx+1), self.totnodes, (self.nelx+1))
+        return np.arange((self.nelx+1), self.totnodes+1, (self.nelx+1))
 
     def getUp(self):
         """
