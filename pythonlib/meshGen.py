@@ -5,6 +5,9 @@ import numpy as np
 
 
 class Plate3D:
+    """
+    Defines the Geometry of a three-dimensional Plate
+    """
     def __init__(self, nelx: int, nely: int, nelz: int):
         """
         initializing class
@@ -157,7 +160,7 @@ class Plate3D:
         """
         Returns the nodes to the left
         """
-        return np.arange(1, self.totnodes, (self.nelx+1))
+        return np.arange(1, self.totnodes+1, (self.nelx+1))
 
     def getRight(self):
         """
