@@ -202,3 +202,192 @@ class Plate3D:
         self.nodeCoords = np.zeros((self.totnodes, 3), dtype=float)
         for node in range(self.totnodes):
             self.nodeCoords[node, :] = self.nodeToCoord(node+1)
+
+
+
+
+class Plate2D:
+    """
+    Defines the Geometry of a two-dimensional Plate
+    """
+    def __init__(self, nelx: int, nely: int):
+        """
+        initializing class
+        """
+        self.nelx = nelx
+        self.nely = nely
+        self.initialize()
+        self.genElemNodes()
+        self.genNodeCoords()
+
+    def initialize(self):
+        self.totelems = self.nelx * self.nely
+        self.totnodes = (self.nelx+1) * (self.nely+1)
+
+    def setElemXY(self, elem: tuple):
+        """
+        Sets the x,y,z coordinates of the element
+        """
+        self.nelx = elem[0]
+        self.nely = elem[1]
+
+    def getElemXY(self) -> tuple:
+        """
+        Returns the x,y coordinates of the element
+        """
+        return (self.nelx, self.nely)
+
+    def coordToNode(self, coord: tuple) -> int:
+        """
+        Returns the Global node ID for the given origin coordinates
+
+        :type coord: tuple
+        :param coord: the x,y coordinates of the node
+        """
+        if self.checkCoords(coord):
+            node = (self.nelx+1)*coord[1] + coord[0] + 1
+            return node
+        raise Exception("Invalid Coordinates")
+
+    def nodeToCoord(self, node: int) -> tuple:
+        """
+        Returns the x,y coordinates of the element
+
+        :type node: int
+        :param node: the node ID
+        """
+        if self.checkNodeID(node):
+            node = node - 1
+            coordY = node // (self.nelx+1)
+            coordX = node % (self.nelx+1)
+            return (coordX, coordY)
+        raise Exception("Invalid Node")
+
+    def getElemOrigin(self, elem: int) -> tuple:
+        """
+        Returns the coordinates (x,y) of the element's origin
+
+        :type elem: int
+        :param elem: the element ID
+        """
+        temp = elem -1
+        coordY = temp // (self.nelx)
+        coordX = temp % (self.nelx)
+        return (coordX, coordY)
+
+    def getElemID(self, origin: tuple) -> int:
+        """
+        Returns the element ID for the given origin
+
+        :type origin: tuple
+        :param origin: the coordinates of the element's origin
+        """
+        if self.checkOrigin(origin):
+            return int((origin[1] * self.nelx) +
+                       origin[0] + 1)
+        return -1
+
+    def getQuadIDs(self, origin: tuple):
+        """
+        Writes the global IDs of the nodes of an element, given the
+        coordinates of an element at its origin
+
+        :type origin: tuple
+        :param origin: the coordinates of the element's origin
+        """
+        if self.checkOrigin(origin):
+            quadID = np.zeros((4), dtype=int)
+            quadID[0] = self.coordToNode(origin)
+            quadID[1] = quadID[0] + 1
+            quadID[2] = quadID[0] + (self.nelx + 1)
+            quadID[3] = quadID[2] + 1
+            return quadID
+        raise Exception("Invalid coordinates")
+
+    def checkElemID(self, elem: int) -> bool:
+        """
+        checks whether an element with the following ID exist
+
+        :type elem: int
+        :param elem: the element ID
+        """
+        return bool(0 < elem <= self.totelems)
+
+    def checkNodeID(self, node: int) -> bool:
+        """
+        checks whether a node with the following ID exist
+
+        :type node: int
+        :param node: the node ID
+        """
+        return bool(0 < node <= self.totnodes)
+
+    def checkCoords(self, coords: tuple) -> bool:
+        """
+        checks whether the node coordinates exist
+
+        :type coords: tuple
+        :param coords: (x,y) coordinates
+        """
+        onX = bool(0 <= coords[0] <= self.nelx)
+        onY = bool(0 <= coords[1] <= self.nely)
+        return bool(onX and onY)
+
+    def checkOrigin(self, origin: tuple) -> bool:
+        """
+        checks whether the origin coordinates exist
+
+        :type origin: tuple
+        :param origin: the coordinates of the element's origin
+        """
+        onX = bool(0 <= origin[0] < self.nelx)
+        onY = bool(0 <= origin[1] < self.nely)
+        return bool(onX and onY)
+
+    def getLeft(self):
+        """
+        Returns the nodes to the left
+        """
+        return np.arange(1, self.totnodes+1, (self.nelx+1))
+
+    def getRight(self):
+        """
+        Returns the nodes to the right
+        """
+        return np.arange((self.nelx+1), self.totnodes+1, (self.nelx+1))
+
+    def getUp(self):
+        """
+        Returns the nodes on top
+        """
+        return np.arange(self.totnodes-(self.nelx+1)+1, self.totnodes+1)
+
+    def getDown(self):
+        """
+        Returns the nodes on the bottom
+        """
+        return np.arange(1, (self.nelx+1)+1)
+
+    def getAll(self):
+        """
+        Returns all the nodes of the model
+        """
+        return np.arange(1,self.totnodes+1)
+
+    def genElemNodes(self):
+        """
+        Generates the Element-Node connectivity table
+        """
+        self.elemNodes = np.zeros((self.totelems, 4), dtype=int)
+        for elem in range(self.totelems):
+            self.elemNodes[elem, :] = self.getQuadIDs(
+                self.getElemOrigin(elem+1))
+
+    def genNodeCoords(self):
+        """
+        Generates the Node-coordinates table
+        """
+        self.nodeCoords = np.zeros((self.totnodes, 2), dtype=float)
+        for node in range(self.totnodes):
+            self.nodeCoords[node, :] = self.nodeToCoord(node+1)
+

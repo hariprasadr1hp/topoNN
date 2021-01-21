@@ -17,12 +17,11 @@
 
 ** Usage
 #+begin_src shell
-mkdir build && cd build
 make
-./topoNN
+make test
 #+end_src
 
-** Third Party Libraries
-+ [[https://gitlab.com/libeigen/eigen/][Eigen]]
-+ [[https://github.com/pybind/pybind11][Pybind11]]
-+ [[https://github.com/google/googletest][Googletest]]
+** Dependencies
++ numpy
++ h5py
++ pytest

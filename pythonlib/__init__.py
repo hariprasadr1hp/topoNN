@@ -1,2 +1,9 @@
-import pythonlib.typedef
-import pythonlib.meshGen
+# import pythonlib.typedef
+# import pythonlib.util
+# import pythonlib.meshGen
+# import pythonlib.elementRoutine
+# import pythonlib.materialRoutine
+# import pythonlib.solveFE
+# import pythonlib.dataGen
+# import pythonlib.topoOpt
+# import pythonlib.neuralNet
