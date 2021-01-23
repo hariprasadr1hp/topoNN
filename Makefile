@@ -23,6 +23,9 @@ clean-build:
 	rm --force --recursive dist/
 	rm --force --recursive *.egg-info
 
+clean-jpg:
+	rm -f ./data/*.jpg
+
 clean-svg:
 	rm -f ./data/*.svg
 

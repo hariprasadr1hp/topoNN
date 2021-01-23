@@ -7,57 +7,56 @@ from pythonlib import elementRoutine as ER
 
 
 class solveFE3D:
-    def __init__(self, nodeCoords, elemNodes, BC, FC, matlParams=(120,0.3,5)):
+    def __init__(self, nodeCoords, elemNodes, BC, FC, matlParams=(120, 0.3, 5)):
         self.nodeCoords = nodeCoords
-        self.elemNodes  = elemNodes
+        self.elemNodes = elemNodes
         self.matlParams = matlParams
         self.BC = BC
         self.FC = FC
 
-        self.totnodes   = np.shape(self.nodeCoords)[0]
-        self.totelems   = np.shape(self.elemNodes)[0]
-        self.totDOFs    = self.totnodes * 3
-        self.elemDOF    = 24
+        self.totnodes = np.shape(self.nodeCoords)[0]
+        self.totelems = np.shape(self.elemNodes)[0]
+        self.totDOFs = self.totnodes * 3
+        self.elemDOF = 24
 
-
-        #Initialize Matrices
+        # Initialize Matrices
         self.Fint_Global = np.zeros((self.totDOFs))
         self.Fext_Global = np.zeros((self.totDOFs))
-        self.K_Global = coo_matrix((self.totDOFs, self.totDOFs),dtype=float)
+        self.K_Global = coo_matrix((self.totDOFs, self.totDOFs), dtype=float)
         self.u_Global = np.zeros((self.totDOFs))
         self.du_Global = np.zeros((self.totDOFs))
 
-    #____________________________________________________________________
+    # ____________________________________________________________________
 
     def assemblyGlobal(self):
         """
         Assembly of the global Force and Stiffness matrices
         """
-        hex8_el = np.zeros((8,3), dtype=float)
-        u_el =  np.zeros((8), dtype=float)
+        hex8_el = np.zeros((8, 3), dtype=float)
+        u_el = np.zeros((8), dtype=float)
 
         for i, elemID in enumerate(self.elemNodes):
             for j, nodeID in enumerate(elemID):
                 hex8_el[j] = self.nodeCoords[nodeID]
-                element = ER.Brick(1,hex8_el)
+                element = ER.Brick(1, hex8_el)
                 K_el, Fint_el = element.hex8(self.matlParams, u_el)
-    #___________________________________________________________________
+    # ___________________________________________________________________
 
     def fillMatrix(self, K_el):
         """
-        Fills the sparse Global stiffness matrix with the local 
+        Fills the sparse Global stiffness matrix with the local
         stifnesses
 
         :type K_el: ndarray (24,24)
         :param K_el: the local stiffness matrix of an element
         """
- 
+
         for i, u in enumerate(K_el):
             for j, v in enumerate(u):
                 pass
-    #___________________________________________________________________
+    # ___________________________________________________________________
 
-    def matlSet(self,matlParams):
+    def matlSet(self, matlParams):
         """
         Sets the material Parameters
 
@@ -65,9 +64,9 @@ class solveFE3D:
         :param matlParams: the material parameters of the element
         """
         self.matlParams = matlParams
-    #____________________________________________________________________
+    # ____________________________________________________________________
 
-    def forceSet(self,F_ID,vals):
+    def forceSet(self, F_ID, vals):
         """
         Sets the force conditions
 
@@ -81,9 +80,9 @@ class solveFE3D:
         # for i in F_ID:
         #     for j,val in enumerate(vals):
         #         self.Fext_Global[3*(i-1)-2+j] = val
-    #____________________________________________________________________
+    # ____________________________________________________________________
 
-    def boundarySet(self,U_ID,vals):
+    def boundarySet(self, U_ID, vals):
         """
         Sets the boundary conditions
 
@@ -103,9 +102,9 @@ class solveFE3D:
         # self.u_freeID = self.GIDS[self.maskID]
         # self.u_fixedDOF = self.GDOFS[~self.maskDOF]
         # self.u_freeDOF = self.GDOFS[self.maskDOF]
-    #____________________________________________________________________
+    # ____________________________________________________________________
 
-    def update_duGlobal(self,du_Global_red):
+    def update_duGlobal(self, du_Global_red):
         """
         Updates the global displacement vector after each iteration
 
@@ -116,7 +115,7 @@ class solveFE3D:
         # for i in self.u_freeDOF:
         #     for j in du_Global_red:
         #         self.du_Global[i-1] = j
-    #____________________________________________________________________
+    # ____________________________________________________________________
 
     def solveProblem(self):
         """
@@ -149,7 +148,7 @@ class solveFE3D:
         #     self.saveResults()
         # return self.u_Global
 
-    #____________________________________________________________________
+    # ____________________________________________________________________
 
     def eucl_U(self):
         """Euclidean distance of u_global"""
@@ -158,5 +157,5 @@ class solveFE3D:
         uz = self.u_Global[2:self.totelems:3]
 
         return np.sqrt(ux**2 + uy**2 + uz**2)
-    #____________________________________________________________________
+    # ____________________________________________________________________
     #####################################################################

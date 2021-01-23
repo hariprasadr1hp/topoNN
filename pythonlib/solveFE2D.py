@@ -2,6 +2,7 @@
 This module will solve the 2D-FE problem
 """
 import numpy as np
+import matplotlib.pyplot as plt
 from pythonlib.meshGen import Plate2D
 from pythonlib import util
 from pythonlib.util import WriteSvg
@@ -24,6 +25,7 @@ class solveFE2D:
     :type matlParams: tuple(E, Nu)
     :param matlParams: youngs modulus and poissons ratio
     """
+
     def __init__(self, mesh2D, BC, FC, nel, matlParams=(120, 0.3)):
         self.mesh2D = mesh2D
         self.nodeCoords = mesh2D.nodeCoords
@@ -111,7 +113,7 @@ class solveFE2D:
     # ___________________________________________________________________
 
     @staticmethod
-    def strainEnergy(u_el, K_el) -> float:
+    def calcStrainEnergy(u_el, K_el) -> float:
         """
         Calculates the starin energy density of an element
 
@@ -151,7 +153,6 @@ class solveFE2D:
         """
         quad_el = np.zeros((4, 2), dtype=float)
         u_el = np.zeros((8), dtype=float)
-        strain_volume = np.zeros((self.totelems,1))
 
         for i, elemID in enumerate(self.elemNodes):
             for j, nodeID in enumerate(elemID):
@@ -159,14 +160,16 @@ class solveFE2D:
             u_el = self.get_dofIDs(self.elemNodes[i])
             element = ER.Quad(GP=1, quad_rc=quad_el)
             K_el, Fint_el = element.quad_el(self.matlParams, u_el)
-        
-            strain_volume[i] = self.strainEnergy(u_el,K_el)
+
+            self.calcStrainEnergy(u_el, K_el)
+            self.strainDensity[self.mesh2D.getElemOrigin(
+                i)] = self.calcStrainEnergy(u_el, K_el)
             self.fillMatrix(i+1, K_el, Fint_el)
-        fname_uku = "data/uku_{}".format(i)
-        
-        # svg = WriteSvg(fname_uku, o)
+
+        fname_uku = "data/uku_{}.svg".format(i)
+        svg = WriteSvg(fname_uku, self.strainDensity)
         # print(o)
-        # svg.write_doc()
+        svg.write_doc()
 
     # ________________________________________________
 
@@ -200,24 +203,47 @@ class solveFE2D:
         """
         Solves the formulated FE Problem
         """
-        for step in range(4):
-            self.assemblyGlobal()
-            K_Global_red = self.K_Global[self.u_freeDOF]
-            K_Global_red = (K_Global_red.T[self.u_freeDOF]).T
-            Fint_Global_red = self.Fint_Global[self.u_freeDOF]
-            Fext_Global_red = self.Fext_Global[self.u_freeDOF]
-            G_red = Fext_Global_red - Fint_Global_red
+        # #iterative-solve
+        # for step in range(1):
+        #     self.assemblyGlobal()
+        #     K_Global_red = self.K_Global[self.u_freeDOF]
+        #     K_Global_red = (K_Global_red.T[self.u_freeDOF]).T
+        #     Fint_Global_red = self.Fint_Global[self.u_freeDOF]
+        #     Fext_Global_red = self.Fext_Global[self.u_freeDOF]
+        #     G_red = Fext_Global_red - Fint_Global_red
 
-            du_Global_red = np.linalg.solve(K_Global_red, G_red)
-            self.update_duGlobal(du_Global_red)
-            self.u_Global += self.du_Global
-            # print(np.max(np.abs(self.Fext_Global-self.Fint_Global)))
-            # print(np.linalg.det(K_Global_red))
-            fname_k = "data/k_{}".format(step)
-            fname_u = "data/u_{}".format(step)
-            svg1 = WriteSvg(fname_k, self.K_Global)
-            svg1.write_doc()
-            
+        #     du_Global_red = np.linalg.solve(K_Global_red, G_red)
+        #     self.update_duGlobal(du_Global_red)
+        #     self.u_Global += self.du_Global
+
+        #direct-solve
+        self.assemblyGlobal()
+        K_Global_red = self.K_Global[self.u_freeDOF]
+        K_Global_red = (K_Global_red.T[self.u_freeDOF]).T
+        Fint_Global_red = self.Fint_Global[self.u_freeDOF]
+        Fext_Global_red = self.Fext_Global[self.u_freeDOF]
+        G_red = Fext_Global_red - Fint_Global_red
+        du_Global_red = np.linalg.solve(K_Global_red, Fext_Global_red)
+        self.update_duGlobal(du_Global_red)
+        self.u_Global += self.du_Global
+
+        # print(np.max(np.abs(self.Fext_Global-self.Fint_Global)))
+
+        fname_ux = "data/ux.jpg"
+        fname_uy = "data/uy.jpg"
+        fname_uxy = "data/uxy.jpg"
+        ux, uy = util.splitXY(self.u_Global)
+        uxy = ux**2 + uy**2
+        ux = np.flip(ux.reshape(self.nelx+1, self.nely+1), 0)
+        uy = np.flip(uy.reshape(self.nelx+1, self.nely+1), 0)
+        uxy = np.flip(uxy.reshape(self.nelx+1, self.nely+1), 0)
+        util.saveContour(ux, fname_ux)
+        util.saveContour(uy, fname_uy)
+        util.saveContour(uxy, fname_uxy)
+
+        print(uy)
+        fname_k = "data/k_matrix.jpg"
+        util.saveContour(self.K_Global, fname_k)
         return self.u_Global
 
     # ____________________________________________________________________
@@ -230,7 +256,7 @@ class solveFE2D:
 
         return np.sqrt(ux**2 + uy**2 + uz**2)
     # ____________________________________________________________________
-    
+
     def analytical(self):
         stiff = self.matlParams[0] * np.array([
             [+2, +0, -1, +0, -1, +0, +0, +0],
@@ -242,8 +268,9 @@ class solveFE2D:
             [+0, +0, -1, +0, -1, +0, +2, +0],
             [+0, +0, +0, -1, +0, -1, +0, +2],
         ])
-        stiff_Global = np.zeros((self.totDOFs,self.totDOFs))
+        stiff_Global = np.zeros((self.totDOFs, self.totDOFs))
         u_anal = np.zeros((self.totDOFs))
+
         def xy(x):
             return [2*x-2, 2*x-1]
         for k, elemID in enumerate(self.elemNodes):
@@ -262,7 +289,6 @@ class solveFE2D:
                 if self.u_freeDOF[each]:
                     u_anal[each] = u_anal_red[count]
                     count += 1
-        return u_anal,stiff_Global
-
+        return u_anal, stiff_Global
 
     #####################################################################

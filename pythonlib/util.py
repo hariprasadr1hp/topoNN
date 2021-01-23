@@ -1,21 +1,60 @@
 """
 util: An utility module
 """
+import xml.etree.ElementTree as ET
 import numpy as np
+import matplotlib.pyplot as plt
 import h5py
 from pyevtk.hl import imageToVTK
 
+
+def saveContour(array, fname):
+    """
+    To save an array as a contour image.
+    """
+    plt.cla()
+    plt.clf()
+    hm = plt.imshow(array, cmap='Blues', interpolation="nearest")
+    plt.colorbar(hm)
+    plt.savefig(fname)
 
 
 def formCond2D(NodeIDs, values: tuple):
     """
     Formulate a condition matrix given the values to the node IDs
     """
-    condMat = np.zeros((np.size(NodeIDs),3))
-    condMat[:,0] = NodeIDs
-    condMat[:,1] = values[0]
-    condMat[:,2] = values[1]    
+    condMat = np.zeros((np.size(NodeIDs), 3))
+    condMat[:, 0] = NodeIDs
+    condMat[:, 1] = values[0]
+    condMat[:, 2] = values[1]
     return condMat
+
+
+def eucl_U2(ux, uy):
+    """Euclidean distance of u_global"""
+    return np.sqrt(ux**2 + uy**2)
+
+
+def eucl_U3(ux, uy, uz):
+    """Euclidean distance of u_global"""
+    return np.sqrt(ux**2 + uy**2 + uz**2)
+
+
+def formMagnitude(nodeVal, xnodes, ynodes):
+    """
+    forms the magnitude matrix
+    """
+    totnodes = int(np.shape(nodeVal)[0]/2)
+    ux = nodeVal[0:totnodes:2]
+    uy = nodeVal[1:totnodes:2]
+    func = np.vectorize(ux, uy)
+    return func(ux, uy).reshape(xnodes, ynodes)
+
+
+def splitXY(vec):
+    ux = vec[0: np.size(vec): 2]
+    uy = vec[1: np.size(vec): 2]
+    return ux, uy
 
 
 class WriteSvg:
@@ -118,6 +157,7 @@ class WriteSvg:
         tree = ET.ElementTree(svg_doc)
         tree.write(self.fname, encoding="UTF-8", xml_declaration=True)
 
+
 class WriteVTK:
     def __init__(self, elemNode, nodeCoord, fname):
         self.elemNode = elemNode
@@ -129,9 +169,9 @@ class WriteVTK:
         self.totnodes = np.shape(self.totnodes)[0]
         self.totelems = np.shape(self.totelems)[0]
 
-
     def writeImage(self):
         pass
+
 
 # Dimensions
 # totelems = nx * ny * nz

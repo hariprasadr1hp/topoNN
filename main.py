@@ -20,19 +20,27 @@ ny = 10
 mesh2D = meshGen.Plate2D(nx, ny)
 elemNodes = mesh2D.elemNodes
 nodeCoords = mesh2D.nodeCoords
-BC = util.formCond2D(mesh2D.getDown(), (0,-1))
-FC = util.formCond2D(mesh2D.getUp(), (0,10))
+BC = util.formCond2D(mesh2D.getDown(), (-1, -1))
+FC = util.formCond2D(mesh2D.getUp(), (0, 10))
 
-solve = solveFE2D.solveFE2D(nodeCoords,elemNodes,BC,FC)
+solve = solveFE2D.solveFE2D(mesh2D,
+                            BC,
+                            FC,
+                            (nx, ny),
+                            matlParams=(120, 0.3))
+# print(solve.Fext_Global)
 u = solve.solveProblem()
-u_anal = solve.analytical()
+u_anal, st = solve.analytical()
 # print(u)
 # print()
 # print(u_anal)
 # print(u - u_anal)
 
 
-
+# svg2 = WriteSvg(fname_u, util.formMagnitude(
+#     solve.u_Global, nx, ny
+# ))
+# svg2.write_doc()
 
 
 ################################################
@@ -101,7 +109,6 @@ u_anal = solve.analytical()
 # print(func(a[:,0],a[:,1]))
 # print()
 # print(Net.applyNet(a))
-
 
 
 # ################################################
