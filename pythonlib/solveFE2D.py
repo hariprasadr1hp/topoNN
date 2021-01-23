@@ -2,6 +2,7 @@
 This module will solve the 2D-FE problem
 """
 import numpy as np
+from pythonlib.meshGen import Plate2D
 from pythonlib.util import WriteSvg
 from pythonlib import elementRoutine as ER
 
@@ -76,11 +77,26 @@ class solveFE2D:
         for each in bc:
             if each[1] == -1:
                 self.u_fixedDOF[int(each[0])*2-2] = True
-            elif each[2] == -1:
+            if each[2] == -1:
                 self.u_fixedDOF[int(each[0])*2-1] = True
-            else:
-                pass
+            # else:
+            #     pass
         self.u_freeDOF = ~self.u_fixedDOF
+
+    # ___________________________________________________________________
+
+    @staticmethod
+    def strainEnergy(u_el, K_el) -> float:
+        """
+        Calculates the starin energy density of an element
+
+        :type u_el: ndarray (8,2)
+        :param u_el: the element displacement
+
+        :type K_el: ndarray (8,8)
+        :param K_el: the element stiffness matrix
+        """
+        return u_el.T @ K_el @ u_el
 
     # ___________________________________________________________________
 
@@ -110,6 +126,7 @@ class solveFE2D:
         """
         quad_el = np.zeros((4, 2), dtype=float)
         u_el = np.zeros((8), dtype=float)
+        strain_volume = np.zeros((self.totelems,1))
 
         for i, elemID in enumerate(self.elemNodes):
             for j, nodeID in enumerate(elemID):
@@ -117,8 +134,16 @@ class solveFE2D:
             u_el = self.get_dofIDs(self.elemNodes[i])
             element = ER.Quad(GP=1, quad_rc=quad_el)
             K_el, Fint_el = element.quad_el(self.matlParams, u_el)
+        
+            strain_volume[i] = self.strainEnergy(u_el,K_el)
             self.fillMatrix(i+1, K_el, Fint_el)
-    # ___________________________________________________________________
+        fname_uku = "data/uku_{}".format(i)
+        # o = strain_volume.reshape(10,10)
+        # svg = WriteSvg(fname_uku, o)
+        # print(o)
+        # svg.write_doc()
+
+    # ________________________________________________
 
     def matlSet(self, matlParams) -> None:
         """
@@ -150,7 +175,7 @@ class solveFE2D:
         """
         Solves the formulated FE Problem
         """
-        for _ in range(4):
+        for step in range(4):
             self.assemblyGlobal()
             K_Global_red = self.K_Global[self.u_freeDOF]
             K_Global_red = (K_Global_red.T[self.u_freeDOF]).T
@@ -161,8 +186,11 @@ class solveFE2D:
             du_Global_red = np.linalg.solve(K_Global_red, G_red)
             self.update_duGlobal(du_Global_red)
             self.u_Global += self.du_Global
-            print(np.max(np.abs(self.Fext_Global-self.Fint_Global)))
+            # print(np.max(np.abs(self.Fext_Global-self.Fint_Global)))
             # print(np.linalg.det(K_Global_red))
+            fname_k = "data/u_{}".format(step)
+            svg1 = WriteSvg(fname_k, self.K_Global)
+            svg1.write_doc()
         return self.u_Global
 
     # ____________________________________________________________________
@@ -207,7 +235,7 @@ class solveFE2D:
                 if self.u_freeDOF[each]:
                     u_anal[each] = u_anal_red[count]
                     count += 1
-        return u_anal
+        return u_anal,stiff_Global
 
 
     #####################################################################
