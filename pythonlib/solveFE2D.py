@@ -3,14 +3,33 @@ This module will solve the 2D-FE problem
 """
 import numpy as np
 from pythonlib.meshGen import Plate2D
+from pythonlib import util
 from pythonlib.util import WriteSvg
 from pythonlib import elementRoutine as ER
 
 
 class solveFE2D:
-    def __init__(self, nodeCoords, elemNodes, BC, FC, matlParams=(120, 0.3)):
-        self.nodeCoords = nodeCoords
-        self.elemNodes = elemNodes
+    """
+    Solves the 2D FE problem
+
+    :type mesh2D: class
+    :param nodeCoords: the mesh-grid structure
+
+    :type elemNodes: ndarray(N X 4)
+    :param elemNodes: Element node connectivity Matrix
+
+    :type nel: tuple(nelx, nely)
+    :param nel: number of elements in the x,y direction
+
+    :type matlParams: tuple(E, Nu)
+    :param matlParams: youngs modulus and poissons ratio
+    """
+    def __init__(self, mesh2D, BC, FC, nel, matlParams=(120, 0.3)):
+        self.mesh2D = mesh2D
+        self.nodeCoords = mesh2D.nodeCoords
+        self.elemNodes = mesh2D.elemNodes
+        self.nelx = nel[0]
+        self.nely = nel[1]
         self.matlParams = matlParams
         self.BC = BC
         self.FC = FC
@@ -34,6 +53,12 @@ class solveFE2D:
             [[True for j in range(self.totDOFs)] for j in range(self.totDOFs)])
         self.boundarySet(self.BC)
         self.forceSet(self.FC)
+
+        # attributes
+        self.strainDensity = np.zeros((self.nelx, self.nely))
+        self.u_x = np.zeros((self.nelx+1, self.nely+1))
+        self.u_y = np.zeros((self.nelx+1, self.nely+1))
+        self.u_xy = np.zeros((self.nelx+1, self.nely+1))
 
     # ____________________________________________________________________
 
@@ -138,7 +163,7 @@ class solveFE2D:
             strain_volume[i] = self.strainEnergy(u_el,K_el)
             self.fillMatrix(i+1, K_el, Fint_el)
         fname_uku = "data/uku_{}".format(i)
-        # o = strain_volume.reshape(10,10)
+        
         # svg = WriteSvg(fname_uku, o)
         # print(o)
         # svg.write_doc()
@@ -188,9 +213,11 @@ class solveFE2D:
             self.u_Global += self.du_Global
             # print(np.max(np.abs(self.Fext_Global-self.Fint_Global)))
             # print(np.linalg.det(K_Global_red))
-            fname_k = "data/u_{}".format(step)
+            fname_k = "data/k_{}".format(step)
+            fname_u = "data/u_{}".format(step)
             svg1 = WriteSvg(fname_k, self.K_Global)
             svg1.write_doc()
+            
         return self.u_Global
 
     # ____________________________________________________________________
