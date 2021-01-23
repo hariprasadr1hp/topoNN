@@ -2,11 +2,12 @@
 This module will solve the 2D-FE problem
 """
 import numpy as np
+from pythonlib.util import WriteSvg
 from pythonlib import elementRoutine as ER
 
 
 class solveFE2D:
-    def __init__(self, nodeCoords, elemNodes, BC, FC, matlParams=(120, 0.3, 5)):
+    def __init__(self, nodeCoords, elemNodes, BC, FC, matlParams=(120, 0.3)):
         self.nodeCoords = nodeCoords
         self.elemNodes = elemNodes
         self.matlParams = matlParams
@@ -114,7 +115,7 @@ class solveFE2D:
             for j, nodeID in enumerate(elemID):
                 quad_el[j] = self.nodeCoords[nodeID-1]
             u_el = self.get_dofIDs(self.elemNodes[i])
-            element = ER.Quad(quad_el)
+            element = ER.Quad(GP=1, quad_rc=quad_el)
             K_el, Fint_el = element.quad_el(self.matlParams, u_el)
             self.fillMatrix(i+1, K_el, Fint_el)
     # ___________________________________________________________________
@@ -160,8 +161,8 @@ class solveFE2D:
             du_Global_red = np.linalg.solve(K_Global_red, G_red)
             self.update_duGlobal(du_Global_red)
             self.u_Global += self.du_Global
-            # print(np.max(np.abs(self.Fext_Global-self.Fint_Global)))
-            print(np.linalg.det(K_Global_red))
+            print(np.max(np.abs(self.Fext_Global-self.Fint_Global)))
+            # print(np.linalg.det(K_Global_red))
         return self.u_Global
 
     # ____________________________________________________________________
@@ -174,4 +175,39 @@ class solveFE2D:
 
         return np.sqrt(ux**2 + uy**2 + uz**2)
     # ____________________________________________________________________
+    
+    def analytical(self):
+        stiff = self.matlParams[0] * np.array([
+            [+2, +0, -1, +0, -1, +0, +0, +0],
+            [+0, +2, +0, -1, +0, -1, +0, +0],
+            [-1, +0, +2, +0, +0, +0, -1, +0],
+            [+0, -1, +0, +2, +0, +0, +0, -1],
+            [-1, +0, +0, +0, +2, +0, -1, +0],
+            [+0, -1, +0, +0, +0, +2, +0, -1],
+            [+0, +0, -1, +0, -1, +0, +2, +0],
+            [+0, +0, +0, -1, +0, -1, +0, +2],
+        ])
+        stiff_Global = np.zeros((self.totDOFs,self.totDOFs))
+        u_anal = np.zeros((self.totDOFs))
+        def xy(x):
+            return [2*x-2, 2*x-1]
+        for k, elemID in enumerate(self.elemNodes):
+            DOFs = np.concatenate([xy(l) for l in self.elemNodes[k]])
+            for i, j in enumerate(DOFs):
+                stiff_Global[j, j] += stiff[i, i]
+        stiff_red = stiff_Global[self.u_freeDOF]
+        stiff_red = (stiff_red.T[self.u_freeDOF]).T
+        Fext_Global_red = self.Fext_Global[self.u_freeDOF]
+        # print(np.linalg.det(stiff))
+        # print(np.linalg.det(stiff_red))
+        u_anal_red = np.linalg.solve(stiff_red, Fext_Global_red)
+        count = 0
+        while count < np.size(u_anal_red):
+            for each, _ in enumerate(self.u_freeDOF):
+                if self.u_freeDOF[each]:
+                    u_anal[each] = u_anal_red[count]
+                    count += 1
+        return u_anal
+
+
     #####################################################################

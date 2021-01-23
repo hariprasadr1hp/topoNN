@@ -152,7 +152,8 @@ class neuralNet:
         y_out = self.applyNet(y_in)
         self.backProp(y_target)
         self.gradientStep(lr)
-        cost = ((y_target-self.y[-1])**2).sum()/batchSize
+        # cost = ((y_target-self.y[-1])**2).sum()/batchSize
+        cost = ((y_target - y_out)**2).sum()/batchSize
         return cost
     # _______________________________________________________________
 

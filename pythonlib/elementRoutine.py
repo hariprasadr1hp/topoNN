@@ -6,7 +6,17 @@ from pythonlib import materialRoutine as MR
 
 
 class Brick:
-    def __init__(self, GP, hex8_rc):
+    """
+    Defines an Hex-8 element
+    
+    :type GP: int
+    :param GP: the number of Gauss Points
+
+    :type hex8_rc: the reference coordinates for the hex8 element 
+    :param hex8_rc: ndarray(8 X 3) 
+
+    """
+    def __init__(self, GP: int, hex8_rc) -> None:
         self.GP = GP
         self.hex8_rc = hex8_rc
         self.grids = 8
@@ -195,7 +205,19 @@ class Brick:
 ########################################################################
 
 class Quad:
-    def __init__(self, quad_rc):
+    """
+    Defines a first order quad element
+    
+    :type GP: int
+    :param GP: the number of Gauss Points
+
+    :type hex8_rc: the reference coordinates(x,y) for the quad 
+                    element 
+    :param hex8_rc: ndarray(4 X 2) 
+
+    """
+    def __init__(self, GP, quad_rc):
+        self.GP = GP
         self.quad_rc = quad_rc
         self.grids = 4
         self.axes = 2
@@ -300,8 +322,8 @@ class Quad:
             # 4 entries
             Bmat[0, (2*i+0)] = dN_ref[i, 0]
             Bmat[1, (2*i+1)] = dN_ref[i, 1]
-            Bmat[2, (2*i+0)] = dN_ref[i, 0]
-            Bmat[2, (2*i+1)] = dN_ref[i, 1]
+            Bmat[2, (2*i+0)] = dN_ref[i, 1]
+            Bmat[2, (2*i+1)] = dN_ref[i, 0]
         return Bmat
     # ____________________________________________________________________
 
