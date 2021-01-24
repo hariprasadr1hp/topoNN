@@ -8,8 +8,17 @@ import numpy as np
 class neuralNet:
     """
     The Network architecture
+    
+    :type layerSizes: list
+    :param layerSizes: contains the number of neurons in each layer
+            For instance, for a network with 2 hidden layers with 
+            2 neurons and the input and output parameters of 3 and 
+            4 respectively, layerSize = [3,2,2,4]
+    
+    :type batchSize: int
+    :param batchSize: the volume of data per batch
     """
-    def __init__(self, layerSizes, batchSize):
+    def __init__(self, layerSizes, batchSize=100):
         self.layerSizes = layerSizes
         self.batchSize = batchSize
         self.numLayers = len(self.layerSizes)
@@ -159,6 +168,14 @@ class neuralNet:
         cost = ((y_target - y_out)**2).sum()/batchSize
         return cost
     # _______________________________________________________________
+
+    def simulateModel(self, steps, y_in, y_target, lr):
+        cc = []
+        for i in range(steps):
+            cost = self.trainNet(y_in, y_target, lr)
+            cc.append(cost)
+        return cc
+    # ______________________________________________________
 
     @staticmethod
     def myfunc(x):

@@ -4,7 +4,7 @@ from pythonlib import meshGen
 from pythonlib import solveFE2D
 from pythonlib import solveFE3D
 from pythonlib import util
-from pythonlib import neuralNet
+from pythonlib.neuralNet import neuralNet
 
 
 # 3D-case
@@ -46,83 +46,68 @@ u = solve.solveProblem()
 
 ################################################
 
+
+
+
 # Net = neuralNet.neuralNet([2,7,7,1],10)
 # # Net.architecture()
 
-# # func = lambda x,y: 3*x**2 + 5*y**3
+# func = lambda x,y: 3*x**2 + 5*y**3
 # # func = lambda x,y: np.sin(x) + np.sin(y)
+
+
 # func = lambda x,y: 3*x + 5*y
-# # func = lambda x,y: x or y
-# # func = lambda x,y: x and y
 # func = np.vectorize(func)
+# nNet = neuralNet([2,5,5,1])
+# y_in = np.random.rand(50,2)
+# nNet.applyNet(y_in)
+# for i in range(100):
+#     y_in = np.random.rand(50,2)
+#     temp = func(y_in[:,0], y_in[:,1])
+#     temp = temp[:,np.newaxis]
+#     nNet.trainNet(y_in, temp, lr=0.001)
+#     # print(np.shape(nNet.y[-1]))
+#     # print(np.shape(temp))
 
-# y_in = np.array(np.random.rand(12,2))
+# a = np.random.rand(50,2)
+# y_target = func(a[:,0], a[:,1])
+# y_target = y_target[:,np.newaxis]
+# y_pred = nNet.applyNet(a)
 
-# cc = []
-# for i in range(1000):
-#     y_in = np.round(np.random.rand(12,2))
-#     # y_target = np.array(np.random.rand(12,1))
-#     y_target = func(y_in[:,0],y_in[:,1])
-#     y_target = y_target[:,np.newaxis]
-#     cost = Net.trainNet(y_in, y_target, 0.00001)
-#     cc.append(cost)
-
-# print(cost)
-# print()
-# plt.plot([i for i in range(1000)],cc)
-# plt.show()
-
-# inp = np.array(np.random.rand(12,2))
-# y_pred = Net.applyNet(inp)
-# y_target = func(inp[:,0],inp[:,1])
-# y_act = y_target
-# # y_act = y_target[:,np.newaxis]
-# print(y_target)
-# print(y_pred)
-# print(Net.applyNet(np.array([1,1])))
-# print(Net.applyNet(np.array([2,1])))
-# print(Net.applyNet(np.array([3,1])))
-# print(Net.applyNet(np.array([4,1])))
-# print(Net.applyNet(np.array([5,1])))
-# print(Net.applyNet(np.array([6,1])))
-# # plt.scatter(y_pred,[i for i in range(12)], label='y_pred')
-# plt.scatter(y_act,np.arange(0,12), label='y_act', color="#00ff00")
-# plt.scatter(y_pred, np.arange(0,12), label='y_pred', color="#ff0000")
+# plt.cla()
+# plt.clf()
+# plt.scatter(np.arange(0,50),y_pred)
+# plt.scatter(np.arange(0,50),y_target)
 # plt.show()
 
 
-# # a = np.array([
-# #     [1,1],
-# #     [2,1],
-# #     [4,1],
-# #     [6,1],
-# #     [8,1],
-# #     [10,1],
-# #     [12,1],
-# #     [14,1],
-# #     [16,1],
-# #     [18,1],
-# #     [110,1],
-# #     [121,1],
-# # ])
-# a = np.array([
-#     [0,0],
-#     [0,1],
-#     [1,0],
-#     [1,1],
-#     [0,0],
-#     [0,1],
-#     [1,0],
-#     [1,1],
-#     [0,0],
-#     [0,1],
-#     [1,0],
-#     [1,1],
-# ])
+# input : 1 parameter
+func = lambda x: np.cos(x)
+func = lambda x: 3*x**3 + 5*x**2 + 7*x + 8
+func = lambda x: 5*x**2 + 7*x + 8
+func = lambda x: 7*x + 8
+nNet = neuralNet([1,4,4,1])
+y_in = np.random.rand(50,1)
+nNet.applyNet(y_in)
+for i in range(100):
+    y_in = np.random.rand(50,1)
+    temp = func(y_in)
+    # temp = temp[:,np.newaxis]
+    nNet.trainNet(y_in, temp, lr=0.001)
+    # print(np.shape(nNet.y[-1]))
+    # print(np.shape(temp))
+    
+a = np.random.rand(50,1)
+a = np.sort(a, axis=0)
+y_target = func(a)
+# y_target = y_target[:,np.newaxis]
+y_pred = nNet.applyNet(a)
 
-# print(func(a[:,0],a[:,1]))
-# print()
-# print(Net.applyNet(a))
+plt.cla()
+plt.clf()
+plt.scatter(y_pred,np.arange(0,50))
+plt.scatter(y_target,np.arange(0,50))
+plt.show()
 
 
-# ################################################
+

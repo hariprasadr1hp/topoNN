@@ -8,6 +8,24 @@ import matplotlib.pyplot as plt
 import h5py
 from pyevtk.hl import imageToVTK
 
+class WriteHdf5:
+    """
+    Storing numpy arrays in hdf5 format along with its metadata(attributes) 
+    
+    :type fname: str
+    :param nelx: The file name for the hdf5 file
+
+    :type amount: int
+    :param amount: volume of the dataset
+    """
+    def __init__(self, fname):
+        self.fname = fname
+
+    def storeArray(self, array, name):
+        pass
+
+    def saveFile(self):
+        pass
 
 def timeit(method):
     def timed(*args, **kwargs):
@@ -33,6 +51,15 @@ def saveContour(array, title, fname, xlabel=None, ylabel=None):
     plt.colorbar(hm)
     plt.savefig(fname)
 
+def func(actual, pred, x, fname, title=None):
+    plt.cla()
+    plt.clf()
+    fig, ax = plt.subplots()
+    ax.plot(x, actual, '-', label='actual')
+    ax.plot(x, pred, '-', label='predicted')
+    plt.title(title)
+    plt.legend(loc='upper right')
+    plt.savefig(fname)
 
 def formCond2D(NodeIDs, values: tuple):
     """

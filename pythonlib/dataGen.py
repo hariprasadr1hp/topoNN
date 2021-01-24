@@ -26,7 +26,7 @@ class DataGen:
         self.amount = amount
         self.fname = "topoNN.h5"
         self.generateData()
-    
+
     def generateForces(self, HDFfile):
         """
         Generating volume strain energy density data for a specific
@@ -115,7 +115,6 @@ class DataGen:
                 FC = util.formCond2D(self.mesh.getRight(),
                                      (randVal100(), randVal100()))
                 strainDensity = solveFE2D(self.mesh, BC, FC)
-                hdfFile.create_array(group_1, "config_{i}", strainDensity)
                 g8.create_dataset("config_{i}", data=strainDensity)
             #########################################################
             # CASE 9: constrained: LEFT, FORCE: TOP
@@ -159,14 +158,17 @@ class DataGen:
                 g12.create_dataset("config_{i}", data=strainDensity)
             #########################################################
 
-
     def augmentData(self):
         """
-        Augments Data to create more training data
+        Augments Data to increase the volume of the dataset
         """
-        pass
-    
-    
+        with h5py.File(self.fname, 'r') as f1:
+            with h5py.File(self.fname, 'w') as f2:
+                g1 = f1.get('group1')
+                f2.create_group('group1_lflip')
+
+        
+
     def generateData(self) -> None:
         """
         Generating dataset
@@ -174,5 +176,6 @@ class DataGen:
         for i in range(self.amount):
             np.random.rand(self.nelx, self.nely)
 
-    def splitTrainTest(self, train: int, test: int) -> None:
-        pass
+    def splitTrainTest(self, train: float):
+        if 0.5 < train < 1:
+            test = 1 - train
