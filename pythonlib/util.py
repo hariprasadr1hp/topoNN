@@ -1,6 +1,7 @@
 """
 util: An utility module
 """
+import time
 import xml.etree.ElementTree as ET
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,13 +9,27 @@ import h5py
 from pyevtk.hl import imageToVTK
 
 
-def saveContour(array, fname):
+def timeit(method):
+    def timed(*args, **kwargs):
+        tstart = time.time()
+        result = method(*args, **kwargs)
+        tend = time.time()
+        print("Time taken: {} seconds".format(tend-tstart))
+        return result
+    return timed
+
+
+def saveContour(array, title, fname, xlabel=None, ylabel=None):
     """
     To save an array as a contour image.
     """
     plt.cla()
     plt.clf()
-    hm = plt.imshow(array, cmap='Blues', interpolation="nearest")
+    hm = plt.imshow(array, cmap='coolwarm', vmin=-1,
+                    vmax=1, interpolation="nearest")
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
     plt.colorbar(hm)
     plt.savefig(fname)
 
@@ -27,6 +42,18 @@ def formCond2D(NodeIDs, values: tuple):
     condMat[:, 0] = NodeIDs
     condMat[:, 1] = values[0]
     condMat[:, 2] = values[1]
+    return condMat
+
+
+def formCond3D(NodeIDs, values: tuple):
+    """
+    Formulate a condition matrix given the values to the node IDs
+    """
+    condMat = np.zeros((np.size(NodeIDs), 4))
+    condMat[:, 0] = NodeIDs
+    condMat[:, 1] = values[0]
+    condMat[:, 2] = values[1]
+    condMat[:, 3] = values[2]
     return condMat
 
 

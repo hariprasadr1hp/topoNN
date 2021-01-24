@@ -6,6 +6,9 @@ import numpy as np
 
 
 class neuralNet:
+    """
+    The Network architecture
+    """
     def __init__(self, layerSizes, batchSize):
         self.layerSizes = layerSizes
         self.batchSize = batchSize
@@ -39,7 +42,7 @@ class neuralNet:
 
     # _______________________________________________________________
 
-    def architecture(self):
+    def architecture(self) -> None:
         """
         prints the schema of the neural architecture
         """

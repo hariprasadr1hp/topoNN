@@ -14,24 +14,26 @@ class solveFE2D:
     Solves the 2D FE problem
 
     :type mesh2D: class
-    :param nodeCoords: the mesh-grid structure
+    :param mesh2D: the mesh-grid structure
 
-    :type elemNodes: ndarray(N X 4)
-    :param elemNodes: Element node connectivity Matrix
+    :type BC: ndarray(N X 3)
+    :param BC: Boundary conditions, nodes along with constraints in
+                x,y direction
 
-    :type nel: tuple(nelx, nely)
-    :param nel: number of elements in the x,y direction
-
+    :type FC: ndarray(N X 3)
+    :param FC: Boundary conditions, nodes along with values in
+                x,y direction
+    
     :type matlParams: tuple(E, Nu)
     :param matlParams: youngs modulus and poissons ratio
     """
 
-    def __init__(self, mesh2D, BC, FC, nel, matlParams=(120, 0.3)):
+    def __init__(self, mesh2D, BC, FC, matlParams=(120, 0.3)):
         self.mesh2D = mesh2D
         self.nodeCoords = mesh2D.nodeCoords
         self.elemNodes = mesh2D.elemNodes
-        self.nelx = nel[0]
-        self.nely = nel[1]
+        self.nelx = mesh2D.nelx
+        self.nely = mesh2D.nely
         self.matlParams = matlParams
         self.BC = BC
         self.FC = FC
@@ -117,7 +119,7 @@ class solveFE2D:
         """
         Calculates the starin energy density of an element
 
-        :type u_el: ndarray (8,2)
+        :type u_el: ndarray (8,1)
         :param u_el: the element displacement
 
         :type K_el: ndarray (8,8)
@@ -140,8 +142,8 @@ class solveFE2D:
         """
         def xy(x):
             return [2*x-2, 2*x-1]
-        DOFs = np.concatenate([xy(i) for i in self.elemNodes[elemID-1]])
-        for i, j in enumerate(DOFs):
+        dofs = np.concatenate([xy(i) for i in self.elemNodes[elemID-1]])
+        for i, j in enumerate(dofs):
             self.K_Global[j, j] += K_el[i, i]
             self.Fint_Global[j] += Fint_el[i]
 
@@ -166,10 +168,6 @@ class solveFE2D:
                 i)] = self.calcStrainEnergy(u_el, K_el)
             self.fillMatrix(i+1, K_el, Fint_el)
 
-        fname_uku = "data/uku_{}.svg".format(i)
-        svg = WriteSvg(fname_uku, self.strainDensity)
-        # print(o)
-        svg.write_doc()
 
     # ________________________________________________
 
@@ -237,13 +235,13 @@ class solveFE2D:
         ux = np.flip(ux.reshape(self.nelx+1, self.nely+1), 0)
         uy = np.flip(uy.reshape(self.nelx+1, self.nely+1), 0)
         uxy = np.flip(uxy.reshape(self.nelx+1, self.nely+1), 0)
-        util.saveContour(ux, fname_ux)
-        util.saveContour(uy, fname_uy)
-        util.saveContour(uxy, fname_uxy)
+        util.saveContour(ux, r'$u_x$',fname_ux, r'$x$')
+        util.saveContour(uy, r'$u_y$',fname_uy, r'$y$')
+        util.saveContour(uxy, r'$|u|$',fname_uxy, r'$x$')
 
-        print(uy)
+        # print(uy)
         fname_k = "data/k_matrix.jpg"
-        util.saveContour(self.K_Global, fname_k)
+        # util.saveContour(self.K_Global, fname_k)
         return self.u_Global
 
     # ____________________________________________________________________
