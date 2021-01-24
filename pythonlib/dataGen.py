@@ -166,16 +166,9 @@ class DataGen:
             with h5py.File(self.fname, 'w') as f2:
                 g1 = f1.get('group1')
                 f2.create_group('group1_lflip')
-
+                
+                    
         
 
-    def generateData(self) -> None:
-        """
-        Generating dataset
-        """
-        for i in range(self.amount):
-            np.random.rand(self.nelx, self.nely)
 
-    def splitTrainTest(self, train: float):
-        if 0.5 < train < 1:
-            test = 1 - train
+

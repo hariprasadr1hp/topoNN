@@ -8,9 +8,9 @@ from pythonlib.neuralNet import neuralNet
 
 
 # 3D-case
-# nx = 1
-# ny = 1
-# nz = 1
+# nx = 10
+# ny = 10
+# nz = 10
 # mesh3D = meshGen.Plate3D(nx, ny, nz)
 # elemNodes = mesh3D.elemNodes
 # nodeCoords = mesh3D.nodeCoords
@@ -39,7 +39,7 @@ solve = solveFE2D.solveFE2D(mesh2D,
                             BC,
                             FC,
                             matlParams=(120, 0.3))
-u = solve.solveProblem()
+# u = solve.solveProblem()
 
 
 
@@ -81,10 +81,9 @@ u = solve.solveProblem()
 # plt.show()
 
 
+################################################
 # input : 1 parameter
-func = lambda x: np.cos(x)
-func = lambda x: 3*x**3 + 5*x**2 + 7*x + 8
-func = lambda x: 5*x**2 + 7*x + 8
+# func = lambda x: 3*x**3 + 5*x**2 + 7*x + 8
 func = lambda x: 7*x + 8
 nNet = neuralNet([1,4,4,1])
 y_in = np.random.rand(50,1)
@@ -92,21 +91,17 @@ nNet.applyNet(y_in)
 for i in range(100):
     y_in = np.random.rand(50,1)
     temp = func(y_in)
-    # temp = temp[:,np.newaxis]
     nNet.trainNet(y_in, temp, lr=0.001)
-    # print(np.shape(nNet.y[-1]))
-    # print(np.shape(temp))
-    
+
 a = np.random.rand(50,1)
 a = np.sort(a, axis=0)
 y_target = func(a)
-# y_target = y_target[:,np.newaxis]
 y_pred = nNet.applyNet(a)
 
 plt.cla()
 plt.clf()
-plt.scatter(y_pred,np.arange(0,50))
-plt.scatter(y_target,np.arange(0,50))
+plt.scatter(y_pred,np.arange(0,50), color='#00ff00')
+plt.scatter(y_target,np.arange(0,50), color="#ff0000")
 plt.show()
 
 
