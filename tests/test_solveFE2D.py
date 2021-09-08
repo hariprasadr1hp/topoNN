@@ -6,9 +6,9 @@ from pythonlib import solveFE2D
 
 
 def test_solve():
-    mesh = Plate2D(10,10)
-    BC = util.formCond2D(mesh.getDown(), (-1, -1))
-    FC = util.formCond2D(mesh.getUp(), (0, 10))
+    mesh = Plate2D(1,1)
+    BC = util.formCond2D(mesh.getLeft(), (-1, -1))
+    FC = util.formCond2D(mesh.getRight(), (5, 0))
     solve = solveFE2D.solveFE2D(mesh,
                                 BC,
                                 FC,

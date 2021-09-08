@@ -3,13 +3,19 @@
 all: main.py
 	python main.py
 
-test: test-meshGen test-neuralNet
+test: test-meshGen test-neuralNet test-solveFE2D
 
 test-meshGen:
 	pytest tests/test_meshGen.py -v
 
 test-neuralNet:
 	pytest tests/test_neuralNet.py -v
+
+test-solveFE2D:
+	pytest tests/test_solveFE2D.py -v
+
+test-solveFE3D:
+	pytest tests/test_solveFE3D.py -v
 
 
 clean: clean-pyc clean-build clean-svg clean-mp4

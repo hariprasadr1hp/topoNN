@@ -267,7 +267,7 @@ class solveFE2D:
             [+0, +0, +0, -1, +0, -1, +0, +2],
         ])
         stiff_Global = np.zeros((self.totDOFs, self.totDOFs))
-        u_anal = np.zeros((self.totDOFs))
+        u_act = np.zeros((self.totDOFs))
 
         def xy(x):
             return [2*x-2, 2*x-1]
@@ -280,13 +280,13 @@ class solveFE2D:
         Fext_Global_red = self.Fext_Global[self.u_freeDOF]
         # print(np.linalg.det(stiff))
         # print(np.linalg.det(stiff_red))
-        u_anal_red = np.linalg.solve(stiff_red, Fext_Global_red)
+        u_act_red = np.linalg.solve(stiff_red, Fext_Global_red)
         count = 0
-        while count < np.size(u_anal_red):
+        while count < np.size(u_act_red):
             for each, _ in enumerate(self.u_freeDOF):
                 if self.u_freeDOF[each]:
-                    u_anal[each] = u_anal_red[count]
+                    u_act[each] = u_act_red[count]
                     count += 1
-        return u_anal, stiff_Global
+        return u_act
 
     #####################################################################

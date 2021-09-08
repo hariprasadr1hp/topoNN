@@ -7,40 +7,23 @@ from pythonlib import util
 from pythonlib.neuralNet import neuralNet
 
 
-# 3D-case
-# nx = 10
-# ny = 10
-# nz = 10
-# mesh3D = meshGen.Plate3D(nx, ny, nz)
-# elemNodes = mesh3D.elemNodes
-# nodeCoords = mesh3D.nodeCoords
-# BC = util.formCond3D(mesh3D.getDown(), (-1, 0, -1))
-# FC = util.formCond3D(mesh3D.getUp(), (10, 0, 10))
-
-# solve = solveFE3D.solveFE3D(mesh3D,
-#                             BC,
-#                             FC,
-#                             matlParams=(120, 0.3))
-# u = solve.solveProblem()
-# print(u)
-
-################################################
-
 # 2D-case
-nx = 10
-ny = 10
+nx = 3
+ny = 3
 mesh2D = meshGen.Plate2D(nx, ny)
 elemNodes = mesh2D.elemNodes
 nodeCoords = mesh2D.nodeCoords
-BC = util.formCond2D(mesh2D.getDown(), (-1, -1))
-FC = util.formCond2D(mesh2D.getUp(), (0, 10))
+BC = util.formCond2D(mesh2D.getLeft(), (-1, -1))
+FC = util.formCond2D(mesh2D.getRight(), (5, 0))
 
 solve = solveFE2D.solveFE2D(mesh2D,
                             BC,
                             FC,
                             matlParams=(120, 0.3))
-# u = solve.solveProblem()
-
+u = solve.solveProblem()
+u_act = solve.analytical()
+print(np.shape(u))
+print(np.shape(u_act))
 
 
 
@@ -84,25 +67,25 @@ solve = solveFE2D.solveFE2D(mesh2D,
 ################################################
 # input : 1 parameter
 # func = lambda x: 3*x**3 + 5*x**2 + 7*x + 8
-func = lambda x: 7*x + 8
-nNet = neuralNet([1,4,4,1])
-y_in = np.random.rand(50,1)
-nNet.applyNet(y_in)
-for i in range(100):
-    y_in = np.random.rand(50,1)
-    temp = func(y_in)
-    nNet.trainNet(y_in, temp, lr=0.001)
+# func = lambda x: 7*x + 8
+# nNet = neuralNet([1,4,4,1])
+# y_in = np.random.rand(50,1)
+# nNet.applyNet(y_in)
+# for i in range(100):
+#     y_in = np.random.rand(50,1)
+#     temp = func(y_in)
+#     nNet.trainNet(y_in, temp, lr=0.001)
 
-a = np.random.rand(50,1)
-a = np.sort(a, axis=0)
-y_target = func(a)
-y_pred = nNet.applyNet(a)
+# a = np.random.rand(50,1)
+# a = np.sort(a, axis=0)
+# y_target = func(a)
+# y_pred = nNet.applyNet(a)
 
-plt.cla()
-plt.clf()
-plt.scatter(y_pred,np.arange(0,50), color='#00ff00')
-plt.scatter(y_target,np.arange(0,50), color="#ff0000")
-plt.show()
+# plt.cla()
+# plt.clf()
+# plt.scatter(y_pred,np.arange(0,50), color='#00ff00')
+# plt.scatter(y_target,np.arange(0,50), color="#ff0000")
+# plt.show()
 
 
 
