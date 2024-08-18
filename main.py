@@ -1,35 +1,29 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from pythonlib import meshGen
-from pythonlib import solveFE2D
-from pythonlib import solveFE3D
+from pythonlib import mesh_generate
+from pythonlib import solvefe_2d
 from pythonlib import util
-from pythonlib.neuralNet import neuralNet
+
+# from pythonlib.neural_net import NeuralNet
 
 
-# 2D-case
-nx = 3
-ny = 3
-mesh2D = meshGen.Plate2D(nx, ny)
-elemNodes = mesh2D.elemNodes
-nodeCoords = mesh2D.nodeCoords
-BC = util.formCond2D(mesh2D.getLeft(), (-1, -1))
-FC = util.formCond2D(mesh2D.getRight(), (5, 0))
+NODES_X = 3
+NODES_Y = 3
+mesh2D = mesh_generate.Plate2D(NODES_X, NODES_Y)
+elem_nodes = mesh2D.elem_nodes
+node_coords = mesh2D.node_coords
+boundary_condns = util.formulate_2d_condns(mesh2D.get_left(), (-1, -1))
+force_condns = util.formulate_2d_condns(mesh2D.get_right(), (5, 0))
 
-solve = solveFE2D.solveFE2D(mesh2D,
-                            BC,
-                            FC,
-                            matlParams=(120, 0.3))
-u = solve.solveProblem()
-u_act = solve.analytical()
+solve = solvefe_2d.SolveFE2D(
+    mesh2D, boundary_condns, force_condns, matl_params=(120, 0.3)
+)
+u = solve.solve_problem()
+u_act = solve.get_analytical_soln()
 print(np.shape(u))
 print(np.shape(u_act))
 
 
-
 ################################################
-
-
 
 
 # Net = neuralNet.neuralNet([2,7,7,1],10)
@@ -86,6 +80,3 @@ print(np.shape(u_act))
 # plt.scatter(y_pred,np.arange(0,50), color='#00ff00')
 # plt.scatter(y_target,np.arange(0,50), color="#ff0000")
 # plt.show()
-
-
-

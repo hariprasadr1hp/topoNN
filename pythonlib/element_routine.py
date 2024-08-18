@@ -1,21 +1,23 @@
 """
 elementRoutine: Defines the characteristics of the element
 """
+
 import numpy as np
-from pythonlib import materialRoutine as MR
+from pythonlib import material_routine as MR
 
 
 class Brick:
     """
     Defines an Hex-8 element
-    
+
     :type GP: int
     :param GP: the number of Gauss Points
 
-    :type hex8_rc: the reference coordinates for the hex8 element 
-    :param hex8_rc: ndarray(8 X 3) 
+    :type hex8_rc: the reference coordinates for the hex8 element
+    :param hex8_rc: ndarray(8 X 3)
 
     """
+
     def __init__(self, GP: int, hex8_rc) -> None:
         self.GP = GP
         self.hex8_rc = hex8_rc
@@ -23,6 +25,7 @@ class Brick:
         self.axes = 3
         self.components = 6
         self.Gtab = self.calcQuadrature()
+
     # ____________________________________________________________________
     # UNDER CONSTRUCTION
 
@@ -31,19 +34,16 @@ class Brick:
         Returns the Gauss Points table based on the no.of Gauss Points
         """
         self.Gtab = np.zeros(((self.GP**self.axes), 5))
-        self.Gtab[0, :] = [1,
-                           0.5773502692,
-                           0.5773502692,
-                           0.5773502692,
-                           1]
+        self.Gtab[0, :] = [1, 0.5773502692, 0.5773502692, 0.5773502692, 1]
         return self.Gtab
+
     # ____________________________________________________________________
 
     def natCoords(self):
         """
         hex8-Natural Coordinates[xi1, xi2, xi3] -> (8 X 3)
         """
-        hex8_nc = np.zeros((self.grids, self.axes), dtype='int32')
+        hex8_nc = np.zeros((self.grids, self.axes), dtype="int32")
         hex8_nc[0] = (-1, -1, -1)
         hex8_nc[1] = (+1, -1, -1)
         hex8_nc[2] = (-1, +1, -1)
@@ -53,6 +53,7 @@ class Brick:
         hex8_nc[6] = (-1, +1, +1)
         hex8_nc[7] = (+1, +1, +1)
         return hex8_nc
+
     # ____________________________________________________________________
 
     def shapeFunc(self, hex8_nc, GP):
@@ -67,10 +68,14 @@ class Brick:
         :param GP: Gauss point
         """
         N = np.zeros((self.grids))
-        N = (1/8) * (1 + (self.Gtab[GP, 1] * hex8_nc[:, 0])) *  \
-                    (1 + (self.Gtab[GP, 2] * hex8_nc[:, 1])) *  \
-                    (1 + (self.Gtab[GP, 3] * hex8_nc[:, 2]))
+        N = (
+            (1 / 8)
+            * (1 + (self.Gtab[GP, 1] * hex8_nc[:, 0]))
+            * (1 + (self.Gtab[GP, 2] * hex8_nc[:, 1]))
+            * (1 + (self.Gtab[GP, 3] * hex8_nc[:, 2]))
+        )
         return N
+
     # ____________________________________________________________________
 
     def dN_nat(self, hex8_nc, GP):
@@ -85,16 +90,26 @@ class Brick:
         :param GP: Gauss point
         """
         dN_nat = np.zeros((self.grids, self.axes))
-        dN_nat[:, 0] = (1/8) * (hex8_nc[:, 0]) * \
-            (1 + (self.Gtab[GP, 2] * hex8_nc[:, 1])) * \
-            (1 + (self.Gtab[GP, 3] * hex8_nc[:, 2]))
-        dN_nat[:, 1] = (1/8) * (hex8_nc[:, 1]) * \
-            (1 + (self.Gtab[GP, 1] * hex8_nc[:, 0])) * \
-            (1 + (self.Gtab[GP, 3] * hex8_nc[:, 2]))
-        dN_nat[:, 2] = (1/8) * (hex8_nc[:, 2]) * \
-            (1 + (self.Gtab[GP, 1] * hex8_nc[:, 0])) * \
-            (1 + (self.Gtab[GP, 2] * hex8_nc[:, 1]))
+        dN_nat[:, 0] = (
+            (1 / 8)
+            * (hex8_nc[:, 0])
+            * (1 + (self.Gtab[GP, 2] * hex8_nc[:, 1]))
+            * (1 + (self.Gtab[GP, 3] * hex8_nc[:, 2]))
+        )
+        dN_nat[:, 1] = (
+            (1 / 8)
+            * (hex8_nc[:, 1])
+            * (1 + (self.Gtab[GP, 1] * hex8_nc[:, 0]))
+            * (1 + (self.Gtab[GP, 3] * hex8_nc[:, 2]))
+        )
+        dN_nat[:, 2] = (
+            (1 / 8)
+            * (hex8_nc[:, 2])
+            * (1 + (self.Gtab[GP, 1] * hex8_nc[:, 0]))
+            * (1 + (self.Gtab[GP, 2] * hex8_nc[:, 1]))
+        )
         return dN_nat
+
     # ____________________________________________________________________
 
     @staticmethod
@@ -112,6 +127,7 @@ class Brick:
         """
         Jmat = hex8_rc.T @ dN_nat
         return Jmat
+
     # ____________________________________________________________________
 
     @staticmethod
@@ -130,6 +146,7 @@ class Brick:
         Jinv = np.linalg.inv(Jmat)
         dN_ref = dN_nat @ Jinv.T
         return dN_ref
+
     # ____________________________________________________________________
 
     def B_matrix(self, dN_ref):
@@ -140,19 +157,20 @@ class Brick:
         :param dN_ref: the derivates of shape functions w.r.t to its
                         reference coordinates
         """
-        Bmat = np.zeros((self.components, (self.grids*self.axes)))
+        Bmat = np.zeros((self.components, (self.grids * self.axes)))
         for i in range(self.grids):
             # 9 entries
-            Bmat[0, (3*i+0)] = dN_ref[i, 0]
-            Bmat[1, (3*i+1)] = dN_ref[i, 1]
-            Bmat[2, (3*i+2)] = dN_ref[i, 2]
-            Bmat[3, (3*i+0)] = dN_ref[i, 0]
-            Bmat[3, (3*i+1)] = dN_ref[i, 1]
-            Bmat[4, (3*i+1)] = dN_ref[i, 1]
-            Bmat[4, (3*i+2)] = dN_ref[i, 2]
-            Bmat[5, (3*i+0)] = dN_ref[i, 0]
-            Bmat[5, (3*i+2)] = dN_ref[i, 2]
+            Bmat[0, (3 * i + 0)] = dN_ref[i, 0]
+            Bmat[1, (3 * i + 1)] = dN_ref[i, 1]
+            Bmat[2, (3 * i + 2)] = dN_ref[i, 2]
+            Bmat[3, (3 * i + 0)] = dN_ref[i, 0]
+            Bmat[3, (3 * i + 1)] = dN_ref[i, 1]
+            Bmat[4, (3 * i + 1)] = dN_ref[i, 1]
+            Bmat[4, (3 * i + 2)] = dN_ref[i, 2]
+            Bmat[5, (3 * i + 0)] = dN_ref[i, 0]
+            Bmat[5, (3 * i + 2)] = dN_ref[i, 2]
         return Bmat
+
     # ____________________________________________________________________
 
     def hex8(self, matlParams, u_el):
@@ -173,8 +191,8 @@ class Brick:
         :type u_el: numpy.array(float) -> (8 X 1)
         :param u_el: the nodal displacements of the element
         """
-        Fint_el = np.zeros((self.grids*self.axes))
-        K_el = np.zeros(((self.grids*self.axes), (self.grids*self.axes)))
+        Fint_el = np.zeros((self.grids * self.axes))
+        K_el = np.zeros(((self.grids * self.axes), (self.grids * self.axes)))
 
         for GP in range(self.GP**self.axes):
             hex8_nc = self.natCoords()
@@ -189,7 +207,7 @@ class Brick:
             strain_el = Bmat @ u_el
 
             # Constitutive Matrix
-            matl = MR.matGen3D(matlParams, strain_el, del_eps=0)
+            matl = MR.MatGen3D(matlParams, strain_el, del_eps=0)
             stress_el, Cmat = matl.LEIsotropic3D()
 
             # K_el Formulation
@@ -204,18 +222,20 @@ class Brick:
 
 ########################################################################
 
+
 class Quad:
     """
     Defines a first order quad element
-    
+
     :type GP: int
     :param GP: the number of Gauss Points
 
-    :type hex8_rc: the reference coordinates(x,y) for the quad 
-                    element 
-    :param hex8_rc: ndarray(4 X 2) 
+    :type hex8_rc: the reference coordinates(x,y) for the quad
+                    element
+    :param hex8_rc: ndarray(4 X 2)
 
     """
+
     def __init__(self, GP, quad_rc):
         self.GP = GP
         self.quad_rc = quad_rc
@@ -317,14 +337,15 @@ class Quad:
         :param dN_ref: the derivates of shape functions w.r.t to its
                         reference coordinates
         """
-        Bmat = np.zeros((self.components, (self.grids*self.axes)))
+        Bmat = np.zeros((self.components, (self.grids * self.axes)))
         for i in range(self.grids):
             # 4 entries
-            Bmat[0, (2*i+0)] = dN_ref[i, 0]
-            Bmat[1, (2*i+1)] = dN_ref[i, 1]
-            Bmat[2, (2*i+0)] = dN_ref[i, 1]
-            Bmat[2, (2*i+1)] = dN_ref[i, 0]
+            Bmat[0, (2 * i + 0)] = dN_ref[i, 0]
+            Bmat[1, (2 * i + 1)] = dN_ref[i, 1]
+            Bmat[2, (2 * i + 0)] = dN_ref[i, 1]
+            Bmat[2, (2 * i + 1)] = dN_ref[i, 0]
         return Bmat
+
     # ____________________________________________________________________
 
     def quad_el(self, matlParams, u_el):

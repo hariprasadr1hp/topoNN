@@ -1,0 +1,94 @@
+[project]
+version = "0.0.1"
+name = "perfince"
+description = "an attempt on personal finance workflow"
+authors = [{ name = "Hari Prasad Radhakrishnan", email = "hp@tuta.io" }]
+readme = "README.md"
+
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = """
+    --strict-markers
+    --tb=short
+    --no-cov-on-fail
+    --cov-branch
+    --doctest-modules
+    --cov-report=term
+    --cov-report=xml
+    --junitxml=junit.xml
+    --cov=./
+"""
+filterwarnings = ["ignore::DeprecationWarning"]
+testpaths = ["tests"]
+
+[tool.mypy]
+mypy_path = "src"
+check_untyped_defs = true
+disallow_any_generics = true
+no_implicit_optional = true
+show_error_codes = true
+strict_equality = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unreachable = true
+warn_unused_configs = true
+no_implicit_reexport = true
+
+[[tool.mypy.overrides]]
+module = [
+    "pyarrow",
+    "scipy.stats",
+    "mkdocs_macros.plugin",
+    "yfinance",
+    "dash",
+    "plotly",
+]
+ignore_missing_imports = true
+
+[tool.pylint]
+disable = [
+    "C0114", # missing-module-docstring
+    "C0115", # missing-class-docstring
+    "C0116", # missing-function-docstring
+    "C0301", # line-too-long
+    "R0903", # too-few-public-variables (< 2)
+    "R0911", # too-many-return-statements (> 5)
+    "R0913", # too-many-arguments (> 5)
+    "R0914", # too-many-local-variables (> 15)
+]
+
+[tool.coverage.run]
+source = ["src"]
+
+[tool.sqlfluff.core]
+dialect = "duckdb"
+templater = "jinja"
+sql_file_exts = ".sql,.sql.j2,.dml,.ddl,.duckdb"
+large_file_skip_byte_limit = 25000
+
+[tool.sqlfluff.indentation]
+indented_joins = false
+indented_using_on = true
+template_blocks_indent = false
+
+[tool.sqlfluff.templater]
+unwrap_wrapped_queries = true
+
+[tool.sqlfluff.templater.jinja]
+apply_dbt_builtins = true
+
+[tool.sqlfluff.rules.capitalisation.keywords]
+capitalisation_policy = "lower"
+
+[tool.sqlfluff.rules.capitalisation.literals]
+capitalisation_policy = "lower"
+
+[tool.sqlfluff.rules.capitalisation.functions]
+extended_capitalisation_policy = "lower"
+
+[tool.sqlfluff.rules.capitalisation.types]
+extended_capitalisation_policy = "lower"
+
+[tool.sqlfluff.rules.aliasing.length]
+min_alias_length = 3

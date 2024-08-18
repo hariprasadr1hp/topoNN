@@ -1,0 +1,2 @@
+class TopoNNError(Exception):
+    pass

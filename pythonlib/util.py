@@ -1,12 +1,16 @@
 """
 util: An utility module
 """
+
+import os
 import time
 import xml.etree.ElementTree as ET
+from pathlib import Path
+
 import numpy as np
 import matplotlib.pyplot as plt
-import h5py
-from pyevtk.hl import imageToVTK
+
+# from pyevtk.hl import imageToVTK
 
 
 def timeit(method):
@@ -14,82 +18,89 @@ def timeit(method):
         tstart = time.time()
         result = method(*args, **kwargs)
         tend = time.time()
-        print("Time taken: {} seconds".format(tend-tstart))
+        print(f"Time taken: {tend - tstart} seconds")
         return result
+
     return timed
 
 
-def saveContour(array, title, fname, xlabel=None, ylabel=None):
+def create_dir_if_not_exists(fpath: Path) -> None:
+    if not os.path.exists(fpath):
+        os.makedirs(fpath)
+
+
+def save_contour(array, title, fname, xlabel=None, ylabel=None):
     """
     To save an array as a contour image.
     """
     plt.cla()
     plt.clf()
-    hm = plt.imshow(array, cmap='coolwarm', vmin=-1,
-                    vmax=1, interpolation="nearest")
+    hm = plt.imshow(array, cmap="coolwarm", vmin=-1, vmax=1, interpolation="nearest")
     plt.title(title)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.colorbar(hm)
     plt.savefig(fname)
 
-def plotFit(actual, pred, x, fname, title=None):
+
+def plot_fit(actual, pred, x, fname, title=None):
     plt.cla()
     plt.clf()
     fig, ax = plt.subplots()
-    ax.plot(x, actual, '-', label='actual')
-    ax.plot(x, pred, '-', label='predicted')
+    ax.plot(x, actual, "-", label="actual")
+    ax.plot(x, pred, "-", label="predicted")
     plt.title(title)
-    plt.legend(loc='upper right')
+    plt.legend(loc="upper right")
     plt.savefig(fname)
 
-def formCond2D(NodeIDs, values: tuple):
+
+def formulate_2d_condns(node_ids, values: tuple):
     """
     Formulate a condition matrix given the values to the node IDs
     """
-    condMat = np.zeros((np.size(NodeIDs), 3))
-    condMat[:, 0] = NodeIDs
-    condMat[:, 1] = values[0]
-    condMat[:, 2] = values[1]
-    return condMat
+    condn_matx = np.zeros((np.size(node_ids), 3))
+    condn_matx[:, 0] = node_ids
+    condn_matx[:, 1] = values[0]
+    condn_matx[:, 2] = values[1]
+    return condn_matx
 
 
-def formCond3D(NodeIDs, values: tuple):
+def formulate_3d_condns(node_ids, values: tuple):
     """
     Formulate a condition matrix given the values to the node IDs
     """
-    condMat = np.zeros((np.size(NodeIDs), 4))
-    condMat[:, 0] = NodeIDs
-    condMat[:, 1] = values[0]
-    condMat[:, 2] = values[1]
-    condMat[:, 3] = values[2]
-    return condMat
+    condn_matx = np.zeros((np.size(node_ids), 4))
+    condn_matx[:, 0] = node_ids
+    condn_matx[:, 1] = values[0]
+    condn_matx[:, 2] = values[1]
+    condn_matx[:, 3] = values[2]
+    return condn_matx
 
 
-def eucl_U2(ux, uy):
+def get_eucl_u_global_2d(ux, uy):
     """Euclidean distance of u_global"""
     return np.sqrt(ux**2 + uy**2)
 
 
-def eucl_U3(ux, uy, uz):
+def get_eucl_u_global_3d(ux, uy, uz):
     """Euclidean distance of u_global"""
     return np.sqrt(ux**2 + uy**2 + uz**2)
 
 
-def formMagnitude(nodeVal, xnodes, ynodes):
+def formulate_magnitude(node_values, nodes_x, nodes_y):
     """
     forms the magnitude matrix
     """
-    totnodes = int(np.shape(nodeVal)[0]/2)
-    ux = nodeVal[0:totnodes:2]
-    uy = nodeVal[1:totnodes:2]
+    totnodes = int(np.shape(node_values)[0] / 2)
+    ux = node_values[0:totnodes:2]
+    uy = node_values[1:totnodes:2]
     func = np.vectorize(ux, uy)
-    return func(ux, uy).reshape(xnodes, ynodes)
+    return func(ux, uy).reshape(nodes_x, nodes_y)
 
 
-def splitXY(vec):
-    ux = vec[0: np.size(vec): 2]
-    uy = vec[1: np.size(vec): 2]
+def split_xy(vec):
+    ux = vec[0 : np.size(vec) : 2]
+    uy = vec[1 : np.size(vec) : 2]
     return ux, uy
 
 
@@ -98,8 +109,8 @@ class WriteSvg:
     Writing svg files
     """
 
-    mini = 0
-    maxi = 100
+    minimum = 0
+    maximum = 100
 
     def __init__(self, fname, array, scheme="grayscale") -> None:
         self.fname = fname
@@ -120,16 +131,16 @@ class WriteSvg:
         """
         Set the range of the scale
         """
-        cls.mini = values[0]
-        cls.maxi = values[1]
+        cls.minimum = values[0]
+        cls.maximum = values[1]
 
     @classmethod
     def normalize_mat(cls, mat):
         """
         normalize array values to a range(-x,+x)
         """
-        span = cls.maxi - cls.mini
-        temp1 = mat - cls.mini
+        span = cls.maximum - cls.minimum
+        temp1 = mat - cls.minimum
         return np.round((250 / span) * temp1) - 125
 
     # @staticmethod
@@ -147,8 +158,8 @@ class WriteSvg:
         Returns a graycale colorcode
         """
         if value > 0:
-            return "#{0:x}{0:x}{0:x}".format(2 * value)
-        return "#{0:x}{0:x}{0:x}".format(-value)
+            return f"#{2 * value:x}{2 * value:x}{2 * value:x}"
+        return f"#{-value:x}{-value:x}{-value:x}"
 
     @staticmethod
     def color_temperature(value: int) -> str:
@@ -156,8 +167,8 @@ class WriteSvg:
         Returns a temperature gradient colorcode
         """
         if value > 0:
-            return "#{0:x}0000".format(value)
-        return "#0000{0:x}".format(-value)
+            return f"#{value:x}0000"
+        return f"#0000{-value:x}"
 
     def square_fill(self, itag):
         """
@@ -170,11 +181,9 @@ class WriteSvg:
                     "rect",
                     width="10",
                     height="10",
-                    x="{}".format(10 * i),
-                    y="{}".format(10 * j),
-                    style="fill:{0};stroke:#000000;stroke-width:1".format(
-                        self.color_grayscale(self.array[i, j])
-                    ),
+                    x=f"{10 * i}",
+                    y=f"{10 * j}",
+                    style=f"fill:{self.color_grayscale(self.array[i, j])};stroke:#000000;stroke-width:1",
                 )
 
     def write_doc(self):
@@ -183,9 +192,9 @@ class WriteSvg:
         """
         svg_doc = ET.Element(
             "svg",
-            width="{}mm".format(10 * self.xdim),
-            height="{}mm".format(10 * self.ydim),
-            viewBox="0 0 {} {}".format(10 * self.xdim, 10 * self.ydim),
+            width=f"{10 * self.xdim}mm",
+            height=f"{10 * self.ydim}mm",
+            viewBox=f"0 0 {10 * self.xdim} {10 * self.ydim}",
         )
         g = ET.SubElement(svg_doc, "g")
         self.square_fill(g)
@@ -195,17 +204,13 @@ class WriteSvg:
 
 
 class WriteVTK:
-    def __init__(self, elemNode, nodeCoord, fname):
-        self.elemNode = elemNode
-        self.nodeCoord = nodeCoord
+    def __init__(self, elem_node, node_coord, fname):
+        self.elem_node = elem_node
+        self.node_coord = node_coord
         self.fname = fname
         self.initialize()
 
-    def initialize(self):
-        self.totnodes = np.shape(self.totnodes)[0]
-        self.totelems = np.shape(self.totelems)[0]
-
-    def writeImage(self):
+    def write_image(self):
         pass
 
 
