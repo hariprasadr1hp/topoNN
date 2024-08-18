@@ -1,4 +1,4 @@
-argparse
+dotenv-python
 numpy
 matplotlib
 scipy
@@ -7,8 +7,4 @@ seaborn
 pandas
 h5py
 pyevtk
-sphinx_rtd_theme
-recommonmark
-sphinxcontrib-spelling
-nbsphinx
 pytest

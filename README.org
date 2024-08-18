@@ -1,11 +1,7 @@
-#+TITLE: topoNN
-#+AUTHOR: Hari Prasad Radhakrishnan
-
-
-* Programming 3D Finite Elements for Structural Optimization using neural networks
+#+title: Programming 2D Finite Elements for Structural Optimization using neural networks
 
 ** Details
-+ Implementing 3D Finite Elements
++ Implementing 2D Finite Elements
 + Solve for displacement in a given boundary value problem
 + Establishing Optimization strategies using convolutional neural-nets
 
@@ -20,8 +16,3 @@
 make
 make test
 #+end_src
-
-** Dependencies
-+ numpy
-+ h5py
-+ pytest

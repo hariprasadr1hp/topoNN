@@ -5,59 +5,23 @@ libMat: Defines the material routine
 import numpy as np
 
 
-class MatGen3D:
-    """
-    Defines the material routine
-
-    """
-
-    def __init__(self, matlParams: tuple, eps, del_eps=0) -> None:
-        self.ymod = matlParams[0]
-        self.Nu = matlParams[1]
+class MatGen2D:
+    def __init__(self, matl_params: tuple[float, float], eps, del_eps=0) -> None:
+        self.youngs_mod = matl_params[0]
+        self.nu = matl_params[1]
         self.eps = eps
         self.del_eps = del_eps
 
-    def LEIsotropic3D(self):
+    def linear_elactic_isotropic_2d(self):
         """
         Returns Stress and Material Stiffness matrix
         for Linear-Elastic Isotopic Material
         """
-        const = self.ymod / ((1 + self.Nu) * (1 - (2 * self.Nu)))
-        a = const * self.Nu
-        b = const * (1 - self.Nu)
-        c = (a - b) / 2
-        Cmat = np.array(
-            [
-                [b, a, a, 0, 0, 0],
-                [a, b, a, 0, 0, 0],
-                [a, a, b, 0, 0, 0],
-                [0, 0, 0, c, 0, 0],
-                [0, 0, 0, 0, c, 0],
-                [0, 0, 0, 0, 0, c],
-            ],
-            dtype=float,
-        )
-        stress_el = Cmat @ self.eps
-        return stress_el, Cmat
-
-
-class matGen2D:
-    def __init__(self, matlParams: tuple, eps, del_eps=0) -> None:
-        self.ymod = matlParams[0]
-        self.Nu = matlParams[1]
-        self.eps = eps
-        self.del_eps = del_eps
-
-    def LEIsotropic2D(self):
-        """
-        Returns Stress and Material Stiffness matrix
-        for Linear-Elastic Isotopic Material
-        """
-        const = self.ymod / ((1 + self.Nu) * (1 - (2 * self.Nu)))
-        a = const * self.Nu
-        b = const * (1 - self.Nu)
-        c = const * 0.5 * (1 - 2 * self.Nu)
-        Cmat = np.array(
+        const = self.youngs_mod / ((1 + self.nu) * (1 - (2 * self.nu)))
+        a = const * self.nu
+        b = const * (1 - self.nu)
+        c = const * 0.5 * (1 - 2 * self.nu)
+        stiffness_matx = np.array(
             [
                 [b, a, 0],
                 [a, b, 0],
@@ -65,5 +29,5 @@ class matGen2D:
             ],
             dtype=float,
         )
-        stress_el = Cmat @ self.eps
-        return stress_el, Cmat
+        stress_el = stiffness_matx @ self.eps
+        return stress_el, stiffness_matx

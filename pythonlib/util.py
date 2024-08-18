@@ -65,26 +65,9 @@ def formulate_2d_condns(node_ids, values: tuple):
     return condn_matx
 
 
-def formulate_3d_condns(node_ids, values: tuple):
-    """
-    Formulate a condition matrix given the values to the node IDs
-    """
-    condn_matx = np.zeros((np.size(node_ids), 4))
-    condn_matx[:, 0] = node_ids
-    condn_matx[:, 1] = values[0]
-    condn_matx[:, 2] = values[1]
-    condn_matx[:, 3] = values[2]
-    return condn_matx
-
-
 def get_eucl_u_global_2d(ux, uy):
     """Euclidean distance of u_global"""
     return np.sqrt(ux**2 + uy**2)
-
-
-def get_eucl_u_global_3d(ux, uy, uz):
-    """Euclidean distance of u_global"""
-    return np.sqrt(ux**2 + uy**2 + uz**2)
 
 
 def formulate_magnitude(node_values, nodes_x, nodes_y):

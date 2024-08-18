@@ -8,6 +8,7 @@ import numpy as np
 
 from pythonlib.util import create_dir_if_not_exists, save_contour, split_xy
 from pythonlib import element_routine as ER
+from settings import PROJECT_DATA_DIR
 
 
 class SolveFE2D:
@@ -155,7 +156,7 @@ class SolveFE2D:
             for j, node_id in enumerate(elem_id):
                 quad_el[j] = self.node_coords[node_id - 1]
             u_el = self.get_dof_ids(self.elem_nodes[i])
-            element = ER.Quad(GP=1, quad_rc=quad_el)
+            element = ER.Quad(gauss_points=1, quad_rc=quad_el)
             k_el, f_int_el = element.quad_el(self.matl_params, u_el)
 
             self.get_strain_energy(u_el, k_el)
@@ -227,8 +228,7 @@ class SolveFE2D:
         uy = np.flip(uy.reshape(self.nelx + 1, self.nely + 1), 0)
         uxy = np.flip(uxy.reshape(self.nelx + 1, self.nely + 1), 0)
 
-        data_path = Path("data/")
-        create_dir_if_not_exists(fpath=data_path)
+        create_dir_if_not_exists(fpath=PROJECT_DATA_DIR)
         save_contour(ux, r"$u_x$", fname_ux, r"$x$")
         save_contour(uy, r"$u_y$", fname_uy, r"$y$")
         save_contour(uxy, r"$|u|$", fname_uxy, r"$x$")
