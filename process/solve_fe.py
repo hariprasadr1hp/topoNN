@@ -2,16 +2,14 @@
 This module will solve the 2D-FE problem
 """
 
-from pathlib import Path
-
 import numpy as np
 
-from pythonlib.util import create_dir_if_not_exists, save_contour, split_xy
-from pythonlib import element_routine as ER
-from settings import PROJECT_DATA_DIR
+from process import element_routine as ER
+from process.util import save_contour, split_xy
+from settings import PROJECT_DATA_DIR, create_dir_if_not_exists
 
 
-class SolveFE2D:
+class SolveFE:
     """
     Solves the 2D FE problem
 
@@ -30,12 +28,12 @@ class SolveFE2D:
     :param matlParams: youngs modulus and poissons ratio
     """
 
-    def __init__(self, mesh_2d, boundary_condns, force_condns, matl_params=(120, 0.3)):
-        self.mesh_2d = mesh_2d
-        self.node_coords = mesh_2d.node_coords
-        self.elem_nodes = mesh_2d.elem_nodes
-        self.nelx = mesh_2d.nelx
-        self.nely = mesh_2d.nely
+    def __init__(self, mesh, boundary_condns, force_condns, matl_params=(120, 0.3)):
+        self.mesh_2d = mesh
+        self.node_coords = mesh.node_coords
+        self.elem_nodes = mesh.elem_nodes
+        self.nelx = mesh.nelx
+        self.nely = mesh.nely
         self.matl_params = matl_params
         self.boundary_condns = boundary_condns
         self.force_condns = force_condns
@@ -212,7 +210,7 @@ class SolveFE2D:
         k_global_red = (k_global_red.T[self.u_free_dof]).T
         f_int_global_red = self.f_int_global[self.u_free_dof]
         f_ext_global_red = self.f_ext_global[self.u_free_dof]
-        g_red = f_ext_global_red - f_int_global_red
+        _ = f_ext_global_red - f_int_global_red
         du_global_red = np.linalg.solve(k_global_red, f_ext_global_red)
         self.update_du_global(du_global_red)
         self.u_global += self.du_global
@@ -234,7 +232,7 @@ class SolveFE2D:
         save_contour(uxy, r"$|u|$", fname_uxy, r"$x$")
 
         # print(uy)
-        fname_k = "data/k_matrix.jpg"
+        # fname_k = "data/k_matrix.jpg"
         # saveContour(self.K_Global, fname_k)
         return self.u_global
 
@@ -265,8 +263,8 @@ class SolveFE2D:
         def xy(x):
             return [2 * x - 2, 2 * x - 1]
 
-        for k, elem_id in enumerate(self.elem_nodes):
-            dofs = np.concatenate([xy(l) for l in self.elem_nodes[k]])
+        for k, _ in enumerate(self.elem_nodes):
+            dofs = np.concatenate([xy(o) for o in self.elem_nodes[k]])
             for i, j in enumerate(dofs):
                 stiff_global[j, j] += stiff[i, i]
         stiff_red = stiff_global[self.u_free_dof]

@@ -1,26 +1,36 @@
 import numpy as np
-from pythonlib import mesh_generate
-from pythonlib import solvefe_2d
-from pythonlib import util
+from icecream import ic
+
+from ingest.generate.mesh import Plate
+from process.solve_fe import SolveFE
+from process.util import formulate_condns
 
 # from pythonlib.neural_net import NeuralNet
 
 
-NODES_X = 3
-NODES_Y = 3
-mesh2D = mesh_generate.Plate2D(NODES_X, NODES_Y)
-elem_nodes = mesh2D.elem_nodes
-node_coords = mesh2D.node_coords
-boundary_condns = util.formulate_2d_condns(mesh2D.get_left(), (-1, -1))
-force_condns = util.formulate_2d_condns(mesh2D.get_right(), (5, 0))
+ELEMS_X = 2
+ELEMS_Y = 1
+mesh = Plate(ELEMS_X, ELEMS_Y)
 
-solve = solvefe_2d.SolveFE2D(
-    mesh2D, boundary_condns, force_condns, matl_params=(120, 0.3)
+elem_nodes = mesh.elem_nodes
+node_coords = mesh.node_coords
+boundary_condns = formulate_condns(mesh.get_left(), (-1, -1))
+force_condns = formulate_condns(mesh.get_right(), (5, 0))
+matl_params = (120, 0.3)
+
+# ic(mesh.elem_nodes)
+# ic(mesh.node_coords)
+
+solve = SolveFE(
+    mesh=mesh,
+    boundary_condns=boundary_condns,
+    force_condns=force_condns,
+    matl_params=matl_params,
 )
 u = solve.solve_problem()
 u_act = solve.get_analytical_soln()
-print(np.shape(u))
-print(np.shape(u_act))
+ic(np.shape(u))
+ic(np.shape(u_act))
 
 
 ################################################

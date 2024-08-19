@@ -6,9 +6,9 @@ import numpy as np
 
 
 class MatGen2D:
-    def __init__(self, matl_params: tuple[float, float], eps, del_eps=0) -> None:
-        self.youngs_mod = matl_params[0]
-        self.nu = matl_params[1]
+    def __init__(self, youngs_mod, nu, eps, del_eps=0) -> None:
+        self.youngs_mod = youngs_mod
+        self.nu = nu
         self.eps = eps
         self.del_eps = del_eps
 

@@ -19,3 +19,5 @@ info/
 
 
 
+.coverage
+junit.xml

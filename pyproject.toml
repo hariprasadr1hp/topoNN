@@ -1,9 +1,9 @@
 [project]
 version = "0.0.1"
-name = "perfince"
-description = "an attempt on personal finance workflow"
+name = "topoNN"
+description = "Programming 2D Finite Elements for Structural Optimization using neural networks"
 authors = [{ name = "Hari Prasad Radhakrishnan", email = "hp@tuta.io" }]
-readme = "README.md"
+readme = "README.org"
 
 
 [tool.pytest.ini_options]
@@ -23,7 +23,7 @@ filterwarnings = ["ignore::DeprecationWarning"]
 testpaths = ["tests"]
 
 [tool.mypy]
-mypy_path = "src"
+plugins = "numpy.typing.mypy_plugin"
 check_untyped_defs = true
 disallow_any_generics = true
 no_implicit_optional = true
@@ -38,11 +38,11 @@ no_implicit_reexport = true
 [[tool.mypy.overrides]]
 module = [
     "pyarrow",
-    "scipy.stats",
     "mkdocs_macros.plugin",
-    "yfinance",
     "dash",
     "plotly",
+    "icecream",
+    "h5py",
 ]
 ignore_missing_imports = true
 

@@ -3,7 +3,8 @@ elementRoutine: Defines the characteristics of the element
 """
 
 import numpy as np
-from pythonlib.material_routine import MatGen2D
+
+from process.material_routine import MatGen2D
 
 
 class Quad:
@@ -148,7 +149,9 @@ class Quad:
         strain_el = b_matx @ u_el
 
         # Constitutive Matrix
-        matl = MatGen2D(matl_params, strain_el, del_eps=0)
+        matl = MatGen2D(
+            youngs_mod=matl_params[0], nu=matl_params[1], eps=strain_el, del_eps=0
+        )
         stress_el, c_mat = matl.linear_elactic_isotropic_2d()
 
         # K_el Formulation

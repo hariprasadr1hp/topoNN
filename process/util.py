@@ -2,13 +2,11 @@
 util: An utility module
 """
 
-import os
 import time
 import xml.etree.ElementTree as ET
-from pathlib import Path
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 # from pyevtk.hl import imageToVTK
 
@@ -22,11 +20,6 @@ def timeit(method):
         return result
 
     return timed
-
-
-def create_dir_if_not_exists(fpath: Path) -> None:
-    if not os.path.exists(fpath):
-        os.makedirs(fpath)
 
 
 def save_contour(array, title, fname, xlabel=None, ylabel=None):
@@ -46,7 +39,7 @@ def save_contour(array, title, fname, xlabel=None, ylabel=None):
 def plot_fit(actual, pred, x, fname, title=None):
     plt.cla()
     plt.clf()
-    fig, ax = plt.subplots()
+    _, ax = plt.subplots()
     ax.plot(x, actual, "-", label="actual")
     ax.plot(x, pred, "-", label="predicted")
     plt.title(title)
@@ -54,7 +47,7 @@ def plot_fit(actual, pred, x, fname, title=None):
     plt.savefig(fname)
 
 
-def formulate_2d_condns(node_ids, values: tuple):
+def formulate_condns(node_ids, values: tuple[float, float]):
     """
     Formulate a condition matrix given the values to the node IDs
     """
@@ -110,7 +103,7 @@ class WriteSvg:
         """
 
     @classmethod
-    def set_range(cls, values: tuple) -> None:
+    def set_range(cls, values: tuple[int, int]) -> None:
         """
         Set the range of the scale
         """
@@ -191,7 +184,6 @@ class WriteVTK:
         self.elem_node = elem_node
         self.node_coord = node_coord
         self.fname = fname
-        self.initialize()
 
     def write_image(self):
         pass

@@ -2,28 +2,30 @@
 mesh_generate.py
 """
 
+from typing import Any
+
 import numpy as np
 
-from pythonlib.errors import TopoNNError
+from process.errors import TopoNNError
 
 
-class Plate2D:
+class Plate:
     """
-    Defines the geometry of a two-dimensional plate
+    Defines the geometry of a two-dimensional plate (non-perforated, rectangular)
     """
 
     def __init__(self, nelx: int, nely: int) -> None:
         self.nelx = nelx
         self.nely = nely
         self.initialize()
-        self.generate_elem_nodes()
-        self.generate_node_coords()
 
     def initialize(self) -> None:
         self.totelems = self.nelx * self.nely
         self.totnodes = (self.nelx + 1) * (self.nely + 1)
+        self.elem_nodes = self.get_elem_nodes_connectivity_matx()
+        self.node_coords = self.get_node_coords_matx()
 
-    def set_elem_xy(self, elem: tuple[int, int]):
+    def set_elem_xy(self, elem: tuple[int, int]) -> None:
         """
         Sets the x,y,z coordinates of the element
         """
@@ -142,48 +144,52 @@ class Plate2D:
         on_y = bool(0 <= origin[1] < self.nely)
         return bool(on_x and on_y)
 
-    def get_left(self):
+    def get_left(self) -> np.ndarray[Any, Any]:
         """
-        Returns the nodes to the left
+        Returns nodes to the left edge
         """
         return np.arange(1, self.totnodes + 1, (self.nelx + 1))
 
     def get_right(self):
         """
-        Returns the nodes to the right
+        Returns nodes to the right edge
         """
         return np.arange((self.nelx + 1), self.totnodes + 1, (self.nelx + 1))
 
-    def get_up(self):
+    def get_up(self) -> np.ndarray[Any, Any]:
         """
-        Returns the nodes on top
+        Returns nodes on the top edge
         """
         return np.arange(self.totnodes - (self.nelx + 1) + 1, self.totnodes + 1)
 
-    def get_down(self):
+    def get_down(self) -> np.ndarray[Any, Any]:
         """
-        Returns the nodes on the bottom
+        Returns nodes at the bottom edge
         """
         return np.arange(1, (self.nelx + 1) + 1)
 
-    def get_all(self):
+    def get_all(self) -> np.ndarray[Any, Any]:
         """
         Returns all the nodes of the model
         """
         return np.arange(1, self.totnodes + 1)
 
-    def generate_elem_nodes(self):
+    def get_elem_nodes_connectivity_matx(self) -> np.ndarray[Any, Any]:
         """
-        Generates the Element-Node connectivity table
-        """
-        self.elem_nodes = np.zeros((self.totelems, 4), dtype=int)
-        for elem in range(self.totelems):
-            self.elem_nodes[elem, :] = self.get_quad_ids(self.get_elem_origin(elem + 1))
+        Generates the element-node connectivity table
 
-    def generate_node_coords(self):
+        each row contains corresponding element nodes, elements sorted (ascending)
         """
-        Generates the Node-coordinates table
+        elem_nodes = np.zeros((self.totelems, 4), dtype=int)
+        for elem in range(self.totelems):
+            elem_nodes[elem, :] = self.get_quad_ids(self.get_elem_origin(elem + 1))
+        return elem_nodes
+
+    def get_node_coords_matx(self) -> np.ndarray[Any, Any]:
         """
-        self.node_coords = np.zeros((self.totnodes, 2), dtype=float)
+        Generates the node-coordinates table
+        """
+        node_coords = np.zeros((self.totnodes, 2), dtype=float)
         for node in range(self.totnodes):
-            self.node_coords[node, :] = self.node_to_coord(node + 1)
+            node_coords[node, :] = self.node_to_coord(node + 1)
+        return node_coords

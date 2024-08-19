@@ -1,6 +1,7 @@
-import pytest
 import numpy as np
-from pythonlib.neural_net import NeuralNet
+import pytest
+
+from process.neural_net import NeuralNet
 
 
 @pytest.fixture
@@ -10,9 +11,9 @@ def net_1():
 
 
 def test_generate_variables_1(net_1):
-    assert net_1.layerSizes == [5, 4, 3, 2]
-    assert net_1.batchSize == 100
-    assert net_1.numLayers == 4
+    assert net_1.layer_sizes == [5, 4, 3, 2]
+    assert net_1.batch_size == 100
+    assert net_1.num_layers == 4
 
     assert np.shape(net_1.y[0]) == (5, 1)
     assert np.shape(net_1.y[1]) == (4, 1)
